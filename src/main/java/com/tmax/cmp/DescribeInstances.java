@@ -13,6 +13,7 @@
  * permissions and limitations under the License.
  */
 package com.tmax.cmp;
+import com.amazonaws.regions.Regions;
 import com.amazonaws.services.ec2.AmazonEC2;
 import com.amazonaws.services.ec2.AmazonEC2ClientBuilder;
 import com.amazonaws.services.ec2.model.DescribeInstancesRequest;
@@ -29,7 +30,10 @@ public class DescribeInstances
     public static void main(String[] args)
     //public void print()
     {
-        final AmazonEC2 ec2 = AmazonEC2ClientBuilder.defaultClient();
+       //final AmazonEC2 ec2 = AmazonEC2ClientBuilder.defaultClient();
+        AmazonEC2 ec2 = AmazonEC2ClientBuilder.standard()
+                .withRegion(Regions.US_EAST_2)
+                .build();
         boolean done = false;
 
         DescribeInstancesRequest request = new DescribeInstancesRequest();
