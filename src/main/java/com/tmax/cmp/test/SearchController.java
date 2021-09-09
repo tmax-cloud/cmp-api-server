@@ -1,4 +1,4 @@
-package com.tmax.cmp;
+package com.tmax.cmp.test;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;

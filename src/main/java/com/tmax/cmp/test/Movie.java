@@ -1,4 +1,4 @@
-package com.tmax.cmp;
+package com.tmax.cmp.test;
 
 import lombok.Builder;
 import lombok.Getter;

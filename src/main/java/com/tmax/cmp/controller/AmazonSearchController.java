@@ -1,5 +1,7 @@
-package com.tmax.cmp;
+package com.tmax.cmp.controller;
 
+import com.tmax.cmp.dto.AmazonDTO;
+import com.tmax.cmp.svc.AmazonService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;

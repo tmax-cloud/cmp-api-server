@@ -1,6 +1,7 @@
-package com.tmax.cmp;
+package com.tmax.cmp.svc;
 
 import com.amazonaws.regions.Regions;
+import com.tmax.cmp.dto.AmazonDTO;
 import org.springframework.stereotype.Service;
 
 import com.amazonaws.services.ec2.AmazonEC2;

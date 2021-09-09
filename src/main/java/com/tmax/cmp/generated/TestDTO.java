@@ -1,11 +1,11 @@
-package com.tmax.cmp;
+package com.tmax.cmp.generated;
 
 import lombok.Builder;
 import lombok.Getter;
 
 @Builder
 @Getter
-public class AmazonDTO {
+public class TestDTO {
     private String instanceId;
     private String imageId;
     private String keyName;
