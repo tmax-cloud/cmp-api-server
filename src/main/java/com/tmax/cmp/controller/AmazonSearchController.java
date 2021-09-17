@@ -18,7 +18,7 @@ public class AmazonSearchController {
     private AmazonService amazonService;
 
     @GetMapping("/instance")
-    public AmazonDTO get(@RequestParam(name = "q") String query, @RequestParam(name = "region", required = false) String region){
+    public AmazonDTO get(@RequestParam(name = "query") String query, @RequestParam(name = "region", required = false) String region){
         return amazonService.getInstance(query, region);
     }
 

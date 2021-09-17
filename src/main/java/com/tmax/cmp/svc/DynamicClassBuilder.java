@@ -53,7 +53,7 @@ public class DynamicClassBuilder {
         compiler.run(null, System.out, System.out, "-parameters", "-classpath", System.getProperty("java.class.path"), dtoFile.getPath());
         compiler.run(null, System.out, System.out, "-parameters", "-classpath", System.getProperty("java.class.path"), svcFile.getPath());
 
-        return className + "is build";
+        return className + " is build";
     }
     /*
     public Object createInstance(String className) throws Exception{
@@ -138,14 +138,73 @@ public class DynamicClassBuilder {
         } else if (type.equals("svc")) {
             sb.append("package com.tmax.cmp.generated;\n" +
                     "\n" +
-                    //"import org.springframework.web.bind.annotation.GetMapping;\n" +
-                    //"import org.springframework.web.bind.annotation.RestController;\n" +
+                    "import com.amazonaws.regions.Regions;\n" +
+                    "import com.tmax.cmp.dto.AmazonDTO;\n" +
+                    "import org.springframework.stereotype.Service;\n" +
+                    "import com.amazonaws.services.ec2.AmazonEC2;\n" +
+                    "import com.amazonaws.services.ec2.AmazonEC2ClientBuilder;\n" +
+                    "import com.amazonaws.services.ec2.model.DescribeInstancesRequest;\n" +
+                    "import com.amazonaws.services.ec2.model.DescribeInstancesResult;\n" +
+                    "import com.amazonaws.services.ec2.model.Instance;\n" +
+                    "import com.amazonaws.services.ec2.model.Reservation;\n" +
+                    "import java.util.ArrayList;\n" +
+                    "import java.util.List;\n" +
+                    "public class AmazonService {\n" +
+                    "    public AmazonDTO myMethod(final String query, final String region) {\n" +
+                    "        List<Instance> instances = describeInstances(region);\n" +
                     "\n" +
-                    //"@RestController\n" +
-                    "public class " + className + "{\n" +
-                    //"    @GetMapping(\"/hello\")\n" +
-                    "    public String myMethod() throws Exception {\n" +
-                    "        return \"Hellooooooooo~~~!\";\n" +
+                    "        for (Instance instance: instances) {\n" +
+                    "            if (query.equals(instance.getInstanceId())){\n" +
+                    "                return AmazonDTO.builder().\n" +
+                    "                        instanceId(instance.getInstanceId()).\n" +
+                    "                        imageId(instance.getImageId()).\n" +
+                    "                        keyName(instance.getKeyName()).\n" +
+                    "                        subnetId(instance.getSubnetId()).\n" +
+                    "                        vpcId(instance.getVpcId()).\n" +
+                    "                        privateIpAddress(instance.getPrivateIpAddress()).\n" +
+                    "                        architecture(instance.getArchitecture()).\n" +
+                    "                        rootDeviceType(instance.getRootDeviceType()).\n" +
+                    "                        rootDeviceName(instance.getRootDeviceName()).\n" +
+                    "                        virtualizationType(instance.getVirtualizationType()).\n" +
+                    "                        hypervisor(instance.getHypervisor()).build();\n" +
+                    "            }\n" +
+                    "        }\n" +
+                    "        return AmazonDTO.builder().instanceId(\"test123\").imageId(\"asdf\").build();\n" +
+                    "    }\n" +
+                    "    public List<Instance> describeInstances(String region)\n" +
+                    "    {\n" +
+                    "        //final AmazonEC2 ec2 = AmazonEC2ClientBuilder.defaultClient();\n" +
+                    "        AmazonEC2 ec2;\n" +
+                    "        if (region == null) {\n" +
+                    "            ec2 = AmazonEC2ClientBuilder.standard()\n" +
+                    "                    .withRegion(Regions.AP_NORTHEAST_2)\n" +
+                    "                    .build();\n" +
+                    "        } else {\n" +
+                    "            ec2 = AmazonEC2ClientBuilder.standard()\n" +
+                    "                    .withRegion(Regions.valueOf(region))\n" +
+                    "                    .build();\n" +
+                    "        }\n" +
+                    "        boolean done = false;\n" +
+                    "\n" +
+                    "        DescribeInstancesRequest request = new DescribeInstancesRequest();\n" +
+                    "        List<Instance> instances = new ArrayList<>();\n" +
+                    "\n" +
+                    "        while(!done) {\n" +
+                    "            DescribeInstancesResult response = ec2.describeInstances(request);\n" +
+                    "\n" +
+                    "            for(Reservation reservation : response.getReservations()) {\n" +
+                    "                for(Instance instance : reservation.getInstances()) {\n" +
+                    "                    instances.add(instance);\n" +
+                    "                }\n" +
+                    "            }\n" +
+                    "\n" +
+                    "            request.setNextToken(response.getNextToken());\n" +
+                    "\n" +
+                    "            if(response.getNextToken() == null) {\n" +
+                    "                done = true;\n" +
+                    "            }\n" +
+                    "        }\n" +
+                    "        return instances;\n" +
                     "    }\n" +
                     "}");
         }
