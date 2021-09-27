@@ -35,11 +35,12 @@ public class CMPController {
         Class<?> cls = Class.forName("com.tmax.cmp.generated." + className, true, cl);
 
         Object obj = cls.newInstance();
-        Class argument_awsid = awsid.getClass();
-        Class argument_region = region.getClass();
+//      Class argument_awsid = awsid.getClass();
+//      Class argument_region = region.getClass();
 
-        Method objMethod = obj.getClass().getMethod("myMethod", argument_awsid, argument_region);
-        Object result = objMethod.invoke(obj, awsid, null);
+//      Method objMethod = obj.getClass().getMethod("myMethod", argument_awsid, argument_region);
+        Method objMethod = obj.getClass().getMethod("myMethod", String.class, String.class);
+        Object result = objMethod.invoke(obj, awsid, region);
         return result.toString();
     }
 }

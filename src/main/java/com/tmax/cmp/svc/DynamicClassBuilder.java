@@ -149,7 +149,7 @@ public class DynamicClassBuilder {
                     "import com.amazonaws.services.ec2.model.Reservation;\n" +
                     "import java.util.ArrayList;\n" +
                     "import java.util.List;\n" +
-                    "public class AmazonService {\n" +
+                    "public class " + className + " {\n" +
                     "    public AmazonDTO myMethod(final String query, final String region) {\n" +
                     "        List<Instance> instances = describeInstances(region);\n" +
                     "\n" +
