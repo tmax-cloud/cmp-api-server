@@ -35,12 +35,27 @@ public class CMPController {
         Class<?> cls = Class.forName("com.tmax.cmp.generated." + className, true, cl);
 
         Object obj = cls.newInstance();
-//      Class argument_awsid = awsid.getClass();
-//      Class argument_region = region.getClass();
+        Class argument_awsid = awsid.getClass();
+        Class argument_region = region.getClass();
 
-//      Method objMethod = obj.getClass().getMethod("myMethod", argument_awsid, argument_region);
-        Method objMethod = obj.getClass().getMethod("myMethod", String.class, String.class);
+        Method objMethod = obj.getClass().getMethod("myMethod", argument_awsid, argument_region);
         Object result = objMethod.invoke(obj, awsid, region);
+        return result.toString();
+    }
+
+    @GetMapping("/get")
+    public String getByInstanceId(@PathVariable String className, @RequestParam String awsid) throws Exception {
+        String path = "build/classes/java/main/com/tmax/cmp/";
+
+        // class load
+        URLClassLoader cl = URLClassLoader.newInstance(new URL[] {new File(path + "generated").toURI().toURL()});
+        Class<?> cls = Class.forName("com.tmax.cmp.generated." + className, true, cl);
+
+        Object obj = cls.newInstance();
+        Class argument_awsid = awsid.getClass();
+
+        Method objMethod = obj.getClass().getMethod("getByInstanceId", argument_awsid);
+        Object result = objMethod.invoke(obj, awsid);
         return result.toString();
     }
 }

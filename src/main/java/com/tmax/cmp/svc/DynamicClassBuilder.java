@@ -1,5 +1,6 @@
 package com.tmax.cmp.svc;
 
+//import javax.security.auth.login.Configuration;
 import javax.tools.JavaCompiler;
 import javax.tools.JavaFileManager;
 import javax.tools.ToolProvider;
@@ -11,6 +12,9 @@ import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.cfg.Configuration;
 
 public class DynamicClassBuilder {
     public String buildClass(String className) throws Exception{
@@ -37,6 +41,15 @@ public class DynamicClassBuilder {
         System.out.println(svcCode);
         new FileWriter(svcFile).append(svcCode).close();
 
+        // 3. Repository Code
+        File repoFile = new File(path + "generated/" + className + "Repository.java");
+        System.out.println("path = "+ repoFile.getPath());
+        repoFile.getParentFile().mkdirs();
+        repoFile.createNewFile();
+        String repoCode = this.generateCode(className, "repo");
+        System.out.println(repoCode);
+        new FileWriter(repoFile).append(repoCode).close();
+
         System.out.println("ClassPath:"+System.getProperty("java.class.path"));
 
         //List<String> options = new ArrayList<String>();
@@ -51,7 +64,33 @@ public class DynamicClassBuilder {
 
         //.run(null, System.out, System.out, options.toArray(new String[] {}));
         compiler.run(null, System.out, System.out, "-parameters", "-classpath", System.getProperty("java.class.path"), dtoFile.getPath());
+        compiler.run(null, System.out, System.out, "-parameters", "-classpath", System.getProperty("java.class.path"), repoFile.getPath());
         compiler.run(null, System.out, System.out, "-parameters", "-classpath", System.getProperty("java.class.path"), svcFile.getPath());
+
+        // Generate table dynamically
+        Configuration config = new Configuration();
+        config.setProperty("hibernate.connection.driver_class", "com.mysql.jdbc.Driver");
+        config.setProperty("hibernate.connection.url", "jdbc:mysql://192.168.9.20:3306/test");
+        config.setProperty("hibernate.connection.username", "root");
+        config.setProperty("hibernate.connection.password", "root");
+        //config.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQL5Dialect");
+        config.setProperty("hibernate.hbm2ddl.auto", "update");
+        config.addAnnotatedClass(Class.forName("com.tmax.cmp.generated."+className+"DTO"));
+
+        try {
+            SessionFactory sessionFactory = config.buildSessionFactory();
+            /*
+            Session session = sessionFactory.openSession();
+
+                // Do something here if you need....
+
+            session.close();
+            */
+            sessionFactory.close();
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
 
         return className + " is build";
     }
@@ -120,9 +159,19 @@ public class DynamicClassBuilder {
                     "import lombok.Builder;\n" +
                     "import lombok.Getter;\n" +
                     "\n" +
-                    "@Builder\n" +
+                    "import javax.persistence.Entity;\n" +
+                    "import javax.persistence.GeneratedValue;\n" +
+                    "import javax.persistence.GenerationType;\n" +
+                    "import javax.persistence.Id;\n" +
+                    "\n" +
+                    "@Entity\n" +
+                    "//@Table(name=" + className + ")\n" +
                     "@Getter\n" +
+                    "@Builder\n" +
                     "public class " + className + "DTO {\n" +
+                    "\n" +
+                    "    @Id\n" +
+                    "    @GeneratedValue(strategy = GenerationType.AUTO)\n" +
                     "    private String instanceId;\n" +
                     "    private String imageId;\n" +
                     "    private String keyName;\n" +
@@ -134,13 +183,16 @@ public class DynamicClassBuilder {
                     "    private String rootDeviceName;\n" +
                     "    private String virtualizationType;\n" +
                     "    private String hypervisor;\n" +
-                    "}\n");
+                    "}\n"
+            );
         } else if (type.equals("svc")) {
             sb.append("package com.tmax.cmp.generated;\n" +
                     "\n" +
                     "import com.amazonaws.regions.Regions;\n" +
-                    "import com.tmax.cmp.dto.AmazonDTO;\n" +
+                    "import com.tmax.cmp.generated." + className + "DTO;\n" +
                     "import org.springframework.stereotype.Service;\n" +
+                    "import com.tmax.cmp.generated." + className + "Repository;\n" +
+                    "import org.springframework.beans.factory.annotation.Autowired;\n" +
                     "import com.amazonaws.services.ec2.AmazonEC2;\n" +
                     "import com.amazonaws.services.ec2.AmazonEC2ClientBuilder;\n" +
                     "import com.amazonaws.services.ec2.model.DescribeInstancesRequest;\n" +
@@ -150,12 +202,14 @@ public class DynamicClassBuilder {
                     "import java.util.ArrayList;\n" +
                     "import java.util.List;\n" +
                     "public class " + className + " {\n" +
-                    "    public AmazonDTO myMethod(final String query, final String region) {\n" +
+                    "    @Autowired\n" +
+                    "    " + className + "Repository " + className + "Repository;\n" +
+                    "    public " + className + "DTO myMethod(final String query, final String region) {\n" +
                     "        List<Instance> instances = describeInstances(region);\n" +
                     "\n" +
                     "        for (Instance instance: instances) {\n" +
                     "            if (query.equals(instance.getInstanceId())){\n" +
-                    "                return AmazonDTO.builder().\n" +
+                    "                return " + className + "DTO.builder().\n" +
                     "                        instanceId(instance.getInstanceId()).\n" +
                     "                        imageId(instance.getImageId()).\n" +
                     "                        keyName(instance.getKeyName()).\n" +
@@ -169,7 +223,7 @@ public class DynamicClassBuilder {
                     "                        hypervisor(instance.getHypervisor()).build();\n" +
                     "            }\n" +
                     "        }\n" +
-                    "        return AmazonDTO.builder().instanceId(\"test123\").imageId(\"asdf\").build();\n" +
+                    "        return " + className + "DTO.builder().instanceId(\"test123\").imageId(\"asdf\").build();\n" +
                     "    }\n" +
                     "    public List<Instance> describeInstances(String region)\n" +
                     "    {\n" +
@@ -206,8 +260,25 @@ public class DynamicClassBuilder {
                     "        }\n" +
                     "        return instances;\n" +
                     "    }\n" +
+                    "   public List<" + className + "DTO> getByInstanceId(String id)\n" +
+                    "   {\n" +
+                    "       return " + className + "Repository.findByInstanceId(\"aaa\");\n" +
+                    "   }\n" +
+                    "}");
+        } else if (type.equals("repo")) {
+            sb.append("package com.tmax.cmp.generated;\n" +
+                    "\n" +
+                    "import com.tmax.cmp.generated." + className + "DTO;\n" +
+                    "import org.springframework.data.jpa.repository.JpaRepository;\n" +
+                    "import org.springframework.data.repository.query.Param;\n" +
+                    "import java.util.List;\n" +
+                    "\n" +
+                    "//@EnableJpaRepositories(basePackages = {com.tmax.cmp.generated})\n" +
+                    "public interface " + className + "Repository extends JpaRepository<" + className + "DTO, String> {\n" +
+                    "    List<" + className + "DTO> findByInstanceId(@Param(\"instanceId\") String instanceId);\n" +
                     "}");
         }
         return sb.toString();
     }
 }
+
