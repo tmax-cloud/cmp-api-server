@@ -41,12 +41,12 @@ public class AWSInstanceService {
         List<Instance> instances = new ArrayList<>();
         //AWSInstanceDTO awsInstance = new AWSInstanceDTO();
 
-        String exist_instances = "";
+        List<String> exist_instances = new ArrayList<>();
         while(!done) {
             DescribeInstancesResult response = ec2.describeInstances(request);
             for(Reservation reservation : response.getReservations()) {
                 for(Instance instance : reservation.getInstances()) {
-                    exist_instances += "'" + instance.getInstanceId() + "',";
+                    exist_instances.add(instance.getInstanceId());
                     //.add(instance);
                     AWSInstanceDTO awsInstance = AWSInstanceDTO.builder().
                             instanceId(instance.getInstanceId()).
@@ -65,11 +65,8 @@ public class AWSInstanceService {
             }
         }
 
-        if (!exist_instances.equals("")) {
-            String query;
-            // 맨 오른쪽 ',' 제거
-            query = exist_instances.substring(0, exist_instances.length()-1);
-            awsInstanceRepository.deleteExcept(query);
+        if (!exist_instances.isEmpty()) {
+            awsInstanceRepository.deleteAllByInstanceIdNotIn(exist_instances);
         }
     }
 }
