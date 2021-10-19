@@ -1,6 +1,7 @@
 package com.tmax.cmp.component;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 import com.tmax.cmp.svc.AWSInstanceService;
@@ -15,7 +16,14 @@ public class Scheduler {
     private AWSInstanceService awsService;
 
     @Scheduled(fixedDelay = 30000)
-    public void scheduleFixedRateTask() {
+    public void scheduleFixedRateTask() throws InterruptedException {
+        System.out.println("Current Thread: " + Thread.currentThread().getName());
         awsService.saveInstances("AP_NORTHEAST_2");
+    }
+
+    @Scheduled(fixedDelay = 30000)
+    public void scheduleFixedRateTask2() throws InterruptedException {
+        System.out.println("Current Thread: " + Thread.currentThread().getName());
+        Thread.sleep(5000);
     }
 }
