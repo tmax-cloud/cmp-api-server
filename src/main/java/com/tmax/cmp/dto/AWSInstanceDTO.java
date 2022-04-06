@@ -1,7 +1,8 @@
 package com.tmax.cmp.dto;
 
-import com.amazonaws.services.ec2.model.*;
+import antlr.collections.List;
 import lombok.*;
+import software.amazon.awssdk.services.ec2.model.*;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -39,7 +40,7 @@ public class AWSInstanceDTO {
 
     private String privateIpAddress;
 
-    private com.amazonaws.internal.SdkInternalList<ProductCode> productCodes;
+    private ProductCode productCodes;
 
     private String publicDnsName;
 
@@ -47,7 +48,7 @@ public class AWSInstanceDTO {
 
     private String ramdiskId;
 
-    private InstanceState state;
+    private String stateName;
 
     private String stateTransitionReason;
 
@@ -57,7 +58,7 @@ public class AWSInstanceDTO {
 
     private String architecture;
 
-    private com.amazonaws.internal.SdkInternalList<InstanceBlockDeviceMapping> blockDeviceMappings;
+    private BlockDeviceMapping blockDeviceMappings;
 
     private String clientToken;
 
@@ -71,11 +72,11 @@ public class AWSInstanceDTO {
 
     private String instanceLifecycle;
 
-    private com.amazonaws.internal.SdkInternalList<ElasticGpuAssociation> elasticGpuAssociations;
+    private ElasticGpuAssociation elasticGpuAssociation;
 
-    private com.amazonaws.internal.SdkInternalList<ElasticInferenceAcceleratorAssociation> elasticInferenceAcceleratorAssociations;
+    private ElasticInferenceAcceleratorAssociation elasticInferenceAcceleratorAssociations;
 
-    private com.amazonaws.internal.SdkInternalList<InstanceNetworkInterface> networkInterfaces;
+    private NetworkInterface networkInterfaces;
 
     private String outpostArn;
 
@@ -83,7 +84,7 @@ public class AWSInstanceDTO {
 
     private String rootDeviceType;
 
-    private com.amazonaws.internal.SdkInternalList<GroupIdentifier> securityGroups;
+    private SecurityGroup securityGroups;
 
     private Boolean sourceDestCheck;
 
@@ -93,7 +94,7 @@ public class AWSInstanceDTO {
 
     private StateReason stateReason;
 
-    private com.amazonaws.internal.SdkInternalList<Tag> tags;
+    private Tag tags;
 
     private String virtualizationType;
 
@@ -105,7 +106,7 @@ public class AWSInstanceDTO {
 
     private HibernationOptions hibernationOptions;
 
-    private com.amazonaws.internal.SdkInternalList<LicenseConfiguration> licenses;
+    private LicenseConfiguration licenses;
 
     private InstanceMetadataOptionsResponse metadataOptions;
 

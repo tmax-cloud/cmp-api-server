@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import software.amazon.awssdk.services.ec2.Ec2Client;
 
 import java.util.List;
 
@@ -24,6 +25,7 @@ public class AmazonSearchController {
 
     @GetMapping("/instances")
     public List<AmazonDTO> list(@RequestParam(name = "region", required = false) String region) {
+
         return amazonService.getAllInstances(region);
     }
 }

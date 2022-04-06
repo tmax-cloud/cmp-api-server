@@ -1,12 +1,5 @@
 package com.tmax.cmp.controller;
 
-import com.amazonaws.regions.Regions;
-import com.amazonaws.services.ec2.AmazonEC2;
-import com.amazonaws.services.ec2.AmazonEC2ClientBuilder;
-import com.amazonaws.services.ec2.model.DescribeInstancesRequest;
-import com.amazonaws.services.ec2.model.DescribeInstancesResult;
-import com.amazonaws.services.ec2.model.Instance;
-import com.amazonaws.services.ec2.model.Reservation;
 import com.tmax.cmp.dto.AWSInstanceDTO;
 import com.tmax.cmp.dto.AmazonDTO;
 import com.tmax.cmp.repository.AWSInstanceRepository;

@@ -12,4 +12,5 @@ public interface AWSInstanceRepository extends JpaRepository<AWSInstanceDTO, Lon
     @Transactional
     @Modifying
     void deleteAllByInstanceIdNotIn(List<String> exist_instances);
+
 }

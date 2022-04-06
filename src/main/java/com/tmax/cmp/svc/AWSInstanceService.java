@@ -1,17 +1,13 @@
 package com.tmax.cmp.svc;
 
-import com.amazonaws.regions.Regions;
 import com.tmax.cmp.dto.AWSInstanceDTO;
 import com.tmax.cmp.repository.AWSInstanceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.amazonaws.services.ec2.AmazonEC2;
-import com.amazonaws.services.ec2.AmazonEC2ClientBuilder;
-import com.amazonaws.services.ec2.model.DescribeInstancesRequest;
-import com.amazonaws.services.ec2.model.DescribeInstancesResult;
-import com.amazonaws.services.ec2.model.Instance;
-import com.amazonaws.services.ec2.model.Reservation;
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.ec2.Ec2Client;
+import software.amazon.awssdk.services.ec2.model.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,52 +17,68 @@ public class AWSInstanceService {
     @Autowired
     private AWSInstanceRepository awsInstanceRepository;
 
-    public void saveInstances(String region)
-    {
-        //final AmazonEC2 ec2 = AmazonEC2ClientBuilder.defaultClient();
+    @Autowired
+    AmazonService amazonService;
 
-        AmazonEC2 ec2;
+    public void saveInstances(String region) {
+        Region defRegion;
+
         if (region == null) {
-            ec2 = AmazonEC2ClientBuilder.standard()
-                    .withRegion(Regions.AP_NORTHEAST_2)
-                    .build();
+           defRegion = Region.EU_WEST_2;
         } else {
-            ec2 = AmazonEC2ClientBuilder.standard()
-                    .withRegion(Regions.valueOf(region))
-                    .build();
+           defRegion = Region.of(region);
         }
+
+        Ec2Client ec2Client = Ec2Client.builder().region(defRegion).build();
+        ArrayList<AWSInstanceDTO> instances = describeAWSInstances(ec2Client);
+        awsInstanceRepository.saveAll(instances);
+
+    }
+
+    public ArrayList<AWSInstanceDTO> describeAWSInstances(Ec2Client ec2Client){
+
         boolean done = false;
+        String nextToken = null;
+        ArrayList<AWSInstanceDTO> awsInstanceDTOS = new ArrayList<AWSInstanceDTO>();
+        try{
+            do{
+                DescribeInstancesRequest request = DescribeInstancesRequest
+                        .builder().maxResults(10).nextToken(nextToken).build();
+                DescribeInstancesResponse response = ec2Client.describeInstances(request);
 
-        DescribeInstancesRequest request = new DescribeInstancesRequest();
-        List<Instance> instances = new ArrayList<>();
-        //AWSInstanceDTO awsInstance = new AWSInstanceDTO();
+                for(Reservation reservation : response.reservations()){
 
-        List<String> exist_instances = new ArrayList<>();
-        while(!done) {
-            DescribeInstancesResult response = ec2.describeInstances(request);
-            for(Reservation reservation : response.getReservations()) {
-                for(Instance instance : reservation.getInstances()) {
-                    exist_instances.add(instance.getInstanceId());
-                    //.add(instance);
-                    AWSInstanceDTO awsInstance = AWSInstanceDTO.builder().
-                            instanceId(instance.getInstanceId()).
-                            imageId(instance.getImageId()).
-                            vpcId(instance.getVpcId()).build();
+                    for(Instance instance : reservation.instances()){
+                        awsInstanceDTOS.add(AWSInstanceDTO.builder().
+                                instanceId(instance.instanceId()).
+                                imageId(instance.imageId()).
+                                keyName(instance.keyName()).
+                                subnetId(instance.subnetId()).
+                                vpcId(instance.vpcId()).
+                                privateIpAddress(instance.privateIpAddress()).
+                                architecture(instance.architectureAsString()).
+                                rootDeviceType(instance.rootDeviceTypeAsString()).
+                                rootDeviceName(instance.rootDeviceName()).
+                                stateName(instance.state().nameAsString()).
+                                stateReason(instance.stateReason()).
+                                virtualizationType(instance.virtualizationTypeAsString()).
+                                hypervisor(instance.hypervisorAsString())
+                                .build());
 
-                    System.out.println("TEST:"+ awsInstance.getInstanceId());
-                    awsInstanceRepository.save(awsInstance);
+                        System.out.println("Instance Id is " + instance.instanceId());
+                        System.out.println("Image Id is " + instance.imageId());
+                        System.out.println("Instance type is " + instance.instanceType());
+                        System.out.println("Instance stateName is " + instance.state().nameAsString());
+                        System.out.println("Instance stateReason is " + instance.stateReason());
+                        System.out.println("monitoring information is " + instance.monitoring().state());
+                    }
                 }
-            }
-
-            request.setNextToken(response.getNextToken());
-
-            if(response.getNextToken() == null) {
-                done = true;
-            }
+            } while(nextToken != null);
+        }catch (Ec2Exception e){
+            System.err.println(e.awsErrorDetails().errorMessage());
+            System.exit(1);
         }
 
-        if (!exist_instances.isEmpty()) {
-            awsInstanceRepository.deleteAllByInstanceIdNotIn(exist_instances);
-        }
+        return awsInstanceDTOS;
     }
 }

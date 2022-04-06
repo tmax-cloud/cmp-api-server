@@ -1,15 +1,14 @@
 package com.tmax.cmp.svc;
 
-import com.amazonaws.regions.Regions;
 import com.tmax.cmp.dto.AmazonDTO;
 import org.springframework.stereotype.Service;
 
-import com.amazonaws.services.ec2.AmazonEC2;
-import com.amazonaws.services.ec2.AmazonEC2ClientBuilder;
-import com.amazonaws.services.ec2.model.DescribeInstancesRequest;
-import com.amazonaws.services.ec2.model.DescribeInstancesResult;
-import com.amazonaws.services.ec2.model.Instance;
-import com.amazonaws.services.ec2.model.Reservation;
+
+import software.amazon.awssdk.services.ec2.Ec2Client;
+import software.amazon.awssdk.services.ec2.model.DescribeInstancesRequest;
+import software.amazon.awssdk.services.ec2.model.DescribeInstancesResponse;
+import software.amazon.awssdk.services.ec2.model.Instance;
+import software.amazon.awssdk.services.ec2.model.Reservation;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,47 +16,50 @@ import java.util.List;
 @Service
 public class AmazonService {
     public AmazonDTO getInstance(final String query, final String region) {
-        List<Instance> instances = describeInstances(region);
 
+        Ec2Client ec2Client = Ec2Client.create();
+
+        List<Instance> instances = describeInstances(ec2Client, region);
+        
         for (Instance instance: instances) {
-            if (query.equals(instance.getInstanceId())){
+            if (query.equals(instance.instanceId())){
                 return AmazonDTO.builder().
-                        instanceId(instance.getInstanceId()).
-                        imageId(instance.getImageId()).
-                        keyName(instance.getKeyName()).
-                        subnetId(instance.getSubnetId()).
-                        vpcId(instance.getVpcId()).
-                        privateIpAddress(instance.getPrivateIpAddress()).
-                        architecture(instance.getArchitecture()).
-                        rootDeviceType(instance.getRootDeviceType()).
-                        rootDeviceName(instance.getRootDeviceName()).
-                        virtualizationType(instance.getVirtualizationType()).
-                        hypervisor(instance.getHypervisor()).build();
+                        instanceId(instance.instanceId()).
+                        imageId(instance.imageId()).
+                        keyName(instance.keyName()).
+                        subnetId(instance.subnetId()).
+                        vpcId(instance.vpcId()).
+                        privateIpAddress(instance.privateIpAddress()).
+                        architecture(instance.architectureAsString()).
+                        rootDeviceType(instance.rootDeviceTypeAsString()).
+                        rootDeviceName(instance.rootDeviceName()).
+                        virtualizationType(instance.virtualizationTypeAsString()).
+                        hypervisor(instance.hypervisorAsString()).build();
             }
         }
         return AmazonDTO.builder().instanceId("test123").imageId("asdf").build();
     }
 
-    public List<AmazonDTO> getAllInstances(final String region) {
-        //AmazonService amazonService = new AmazonService();
-        //List<Instance> instances = new ArrayList<>();
+    public ArrayList<AmazonDTO> getAllInstances(final String region) {
 
-        List<AmazonDTO> amazonDTOs = new ArrayList<>();
-        List<Instance> instances = describeInstances(region);
+        Ec2Client ec2Client = Ec2Client.create();
+
+        ArrayList<AmazonDTO> amazonDTOs = new ArrayList<>();
+        List<Instance> instances = describeInstances(ec2Client, region);
 
         for (Instance instance: instances) {
             amazonDTOs.add(AmazonDTO.builder().
-                    instanceId(instance.getInstanceId()).
-                    imageId(instance.getImageId()).
-                    keyName(instance.getKeyName()).
-                    subnetId(instance.getSubnetId()).
-                    vpcId(instance.getVpcId()).
-                    privateIpAddress(instance.getPrivateIpAddress()).
-                    architecture(instance.getArchitecture()).
-                    rootDeviceType(instance.getRootDeviceType()).
-                    rootDeviceName(instance.getRootDeviceName()).
-                    virtualizationType(instance.getVirtualizationType()).
-                    hypervisor(instance.getHypervisor()).build());
+                    instanceId(instance.instanceId()).
+                    imageId(instance.imageId()).
+                    keyName(instance.keyName()).
+                    subnetId(instance.subnetId()).
+                    vpcId(instance.vpcId()).
+                    privateIpAddress(instance.privateIpAddress()).
+                    architecture(instance.architectureAsString()).
+                    rootDeviceType(instance.rootDeviceTypeAsString()).
+                    rootDeviceName(instance.rootDeviceName()).
+                    virtualizationType(instance.virtualizationTypeAsString()).
+                    hypervisor(instance.hypervisorAsString()).build());
         }
         return amazonDTOs;
         /*
@@ -69,38 +71,27 @@ public class AmazonService {
 
     }
 
-    public List<Instance> describeInstances(String region)
+    public List<Instance> describeInstances(Ec2Client ec2Client, String region)
     {
-        //final AmazonEC2 ec2 = AmazonEC2ClientBuilder.defaultClient();
-        AmazonEC2 ec2;
-        if (region == null) {
-            ec2 = AmazonEC2ClientBuilder.standard()
-                    .withRegion(Regions.AP_NORTHEAST_2)
-                    .build();
-        } else {
-            ec2 = AmazonEC2ClientBuilder.standard()
-                    .withRegion(Regions.valueOf(region))
-                    .build();
-        }
-        boolean done = false;
 
-        DescribeInstancesRequest request = new DescribeInstancesRequest();
+        boolean done = false;
+        String nextToken = null;
+
+        DescribeInstancesRequest request = DescribeInstancesRequest
+                .builder().maxResults(6).nextToken(nextToken).build();
         List<Instance> instances = new ArrayList<>();
+        DescribeInstancesResponse response = ec2Client.describeInstances(request);
 
         while(!done) {
-            DescribeInstancesResult response = ec2.describeInstances(request);
 
-            for(Reservation reservation : response.getReservations()) {
-                for(Instance instance : reservation.getInstances()) {
+            for(Reservation reservation : response.reservations()) {
+                for(Instance instance : reservation.instances()) {
                     instances.add(instance);
                 }
             }
 
-            request.setNextToken(response.getNextToken());
+            nextToken = response.nextToken();
 
-            if(response.getNextToken() == null) {
-                done = true;
-            }
         }
         return instances;
     }
