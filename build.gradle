@@ -25,8 +25,12 @@ dependencies {
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	// AWS
-	implementation platform('com.amazonaws:aws-java-sdk-bom:1.11.1000')
-	implementation 'com.amazonaws:aws-java-sdk-ec2'
+	implementation platform('software.amazon.awssdk:bom:2.17.163')
+	implementation 'software.amazon.awssdk:ec2'
+	implementation 'software.amazon.awssdk:iam'
+	implementation 'software.amazon.awssdk:costexplorer'
+
+
 	// Hibernate
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation("mysql:mysql-connector-java")

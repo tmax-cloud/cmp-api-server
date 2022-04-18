@@ -18,7 +18,7 @@ public class Scheduler {
     @Scheduled(fixedDelay = 30000)
     public void scheduleFixedRateTask() throws InterruptedException {
         System.out.println("Current Thread: " + Thread.currentThread().getName());
-        awsService.saveInstances("AP_NORTHEAST_2");
+        awsService.saveInstances("eu-west-2");
     }
 
     @Scheduled(fixedDelay = 30000)
