@@ -1,12 +1,14 @@
 package com.tmax.cmp.controller;
 
 import com.tmax.cmp.dto.AmazonDTO;
+import com.tmax.cmp.svc.AWSInstanceService;
 import com.tmax.cmp.svc.AmazonService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.ec2.Ec2Client;
 
 import java.util.List;
@@ -18,8 +20,11 @@ public class AmazonSearchController {
     @Autowired
     private AmazonService amazonService;
 
+    @Autowired
+    private AWSInstanceService awsInstanceService;
+
     @GetMapping("/instance")
-    public AmazonDTO get(@RequestParam(name = "query") String query, @RequestParam(name = "region", required = false) String region){
+    public AmazonDTO get(@RequestParam(name = "query") String query, @RequestParam(name = "region", required = false) String region) {
         return amazonService.getInstance(query, region);
     }
 
@@ -27,5 +32,15 @@ public class AmazonSearchController {
     public List<AmazonDTO> list(@RequestParam(name = "region", required = false) String region) {
 
         return amazonService.getAllInstances(region);
+    }
+
+    @GetMapping("/amis")
+    public void amis(@RequestParam(name = "region", required = false) String region,
+                     @RequestParam(name = "keyName", required = false) String keyName,
+                     @RequestParam(name = "value", required = false) String value) {
+
+        Ec2Client ec2Client = Ec2Client.builder().region(Region.of(region)).build();
+        awsInstanceService.searchAMI(ec2Client, keyName, value);
+
     }
 }

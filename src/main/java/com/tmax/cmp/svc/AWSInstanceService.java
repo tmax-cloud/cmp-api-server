@@ -35,6 +35,25 @@ public class AWSInstanceService {
 
     }
 
+    public void searchAMI(Ec2Client ec2Client, String keyName, String value){
+
+        DescribeImagesRequest request = DescribeImagesRequest.builder()
+                .filters(Filter.builder().name(keyName).values(value).build())
+                .build();
+
+        DescribeImagesResponse response = ec2Client.describeImages(request);
+
+
+        Object[] imageList = response.images().toArray();
+
+        for(Object obj : imageList){
+            Image image = (Image)obj;
+            System.out.println("Image Id:" + image.imageId());
+        }
+
+        System.out.println("total image e/a : " + response.images().size());
+    }
+
     public ArrayList<AWSInstanceDTO> describeAWSInstances(Ec2Client ec2Client){
 
         boolean done = false;
