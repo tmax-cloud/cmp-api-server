@@ -1,4 +1,4 @@
-package com.tmax.cmp.entity.vsphere.vm.vmresouces;
+package com.tmax.cmp.entity.vsphere.vm.vmresources;
 
 import lombok.NoArgsConstructor;
 
