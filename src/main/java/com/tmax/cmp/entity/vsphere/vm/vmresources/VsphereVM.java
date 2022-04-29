@@ -4,6 +4,7 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.List;
 
 @Entity
 @Table(name= "vsphere_vm")
@@ -13,10 +14,11 @@ import java.io.Serializable;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+
 public class VsphereVM implements Serializable {
 
-    @Id
-    @Column(name= "vm_id")
+//    @Id
+//    @Column(name= "vm_id")
 //    @GeneratedValue(strategy = GenerationType.AUTO)
 
     private Long id;
@@ -33,7 +35,6 @@ public class VsphereVM implements Serializable {
     private Boot boot;
 
     @EmbeddedId
-//    @AttributeOverride(name = "name", column = @Column(name = "identity_name"))
     private Identity identity;
 
     private String guest_OS;
@@ -62,14 +63,14 @@ public class VsphereVM implements Serializable {
     private String power_state;
 
 
-//    @ElementCollection
-//    @CollectionTable(name = "boot_devices",
-//            joinColumns = {
-//                    @JoinColumn(name = "vm_id"),
-//                    @JoinColumn(name = "bios_uuid"),
-//                    @JoinColumn(name = "instance_uuid"),
-//                    @JoinColumn(name = "identity_name")})
-//    private List<BootDevices> boot_devices;
+    @ElementCollection
+    @CollectionTable(name = "boot_devices",
+            joinColumns = {
+                    @JoinColumn(name = "vm_id"),
+                    @JoinColumn(name = "bios_uuid"),
+                    @JoinColumn(name = "instance_uuid"),
+                    @JoinColumn(name = "identity_name")})
+    private List<BootDevices> boot_devices;
 
 
 }

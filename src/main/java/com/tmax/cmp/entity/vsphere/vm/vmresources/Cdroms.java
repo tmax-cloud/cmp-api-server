@@ -19,12 +19,12 @@ public class Cdroms {
     @Column(name = "cdrom_id")
     private Long cdrom_Id;
 
-//    @ManyToOne
-//    @JoinColumn(name = "vm_id")
-//    @JoinColumn(name = "bios_uuid")
-//    @JoinColumn(name = "instance_uuid")
-//    @JoinColumn(name = "identity_name")
-//    private VsphereVM vm;
+    @ManyToOne
+    @JoinColumn(name = "vm_id")
+    @JoinColumn(name = "bios_uuid")
+    @JoinColumn(name = "instance_uuid")
+    @JoinColumn(name = "identity_name")
+    private VsphereVM vm;
 
     private boolean allow_guest_control;
 

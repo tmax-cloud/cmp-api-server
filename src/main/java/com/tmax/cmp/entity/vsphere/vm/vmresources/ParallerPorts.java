@@ -19,12 +19,12 @@ public class ParallerPorts {
     @Column(name = "parallel_port_id")
     private Long id;
 
-//    @ManyToOne
-//    @JoinColumn(name = "vm_id")
-//    @JoinColumn(name = "bios_uuid")
-//    @JoinColumn(name = "instance_uuid")
-//    @JoinColumn(name = "identity_name")
-//    private VsphereVM vm;
+    @ManyToOne
+    @JoinColumn(name = "vm_id")
+    @JoinColumn(name = "bios_uuid")
+    @JoinColumn(name = "instance_uuid")
+    @JoinColumn(name = "identity_name")
+    private VsphereVM vm;
 
     private boolean allow_guest_control;
 

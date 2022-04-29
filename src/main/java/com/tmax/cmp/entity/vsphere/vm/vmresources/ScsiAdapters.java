@@ -19,12 +19,12 @@ public class ScsiAdapters {
     @Column(name = "scsi_adapter_id")
     private Long scsi_adapter_id;
 
-//    @ManyToOne
-//    @JoinColumn(name = "vm_id")
-//    @JoinColumn(name = "bios_uuid")
-//    @JoinColumn(name = "instance_uuid")
-//    @JoinColumn(name = "identity_name")
-//    private VsphereVM vm;
+    @ManyToOne
+    @JoinColumn(name = "vm_id")
+    @JoinColumn(name = "bios_uuid")
+    @JoinColumn(name = "instance_uuid")
+    @JoinColumn(name = "identity_name")
+    private VsphereVM vm;
 
     private String label;
 
