@@ -17,10 +17,11 @@ public class Cdroms {
 
     @Id
     @Column(name = "cdrom_id")
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long cdrom_Id;
 
     @ManyToOne
-    @JoinColumn(name = "vm_id")
+//    @JoinColumn(name = "vm_id")
     @JoinColumn(name = "bios_uuid")
     @JoinColumn(name = "instance_uuid")
     @JoinColumn(name = "identity_name")
@@ -52,6 +53,10 @@ public class Cdroms {
 }
 
 @Embeddable
+@Getter
+@Setter
+@ToString
+@NoArgsConstructor
 class CdromBacking {
     private boolean auto_detect;
     private String device_access_type;

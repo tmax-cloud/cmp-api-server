@@ -17,10 +17,11 @@ public class ParallerPorts {
 
     @Id
     @Column(name = "parallel_port_id")
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "vm_id")
+//    @JoinColumn(name = "vm_id")
     @JoinColumn(name = "bios_uuid")
     @JoinColumn(name = "instance_uuid")
     @JoinColumn(name = "identity_name")
@@ -41,6 +42,10 @@ public class ParallerPorts {
 }
 
 @Embeddable
+@Getter
+@Setter
+@ToString
+@NoArgsConstructor
 class Parallel_Port_Backing{
     private boolean auto_detect;
     private String file;

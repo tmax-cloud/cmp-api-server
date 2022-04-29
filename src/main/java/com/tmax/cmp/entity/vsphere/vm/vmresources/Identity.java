@@ -4,8 +4,6 @@ import lombok.*;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import java.io.Serializable;
 
 @Embeddable
@@ -16,8 +14,9 @@ import java.io.Serializable;
 @EqualsAndHashCode
 public class Identity implements Serializable {
 
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long vm_id;
+//    @GeneratedValue(strategy = GenerationType.AUTO)
+//    @Column(nullable = true)
+//    private Long vm_id;
 
     private String bios_uuid;
     @Column(name = "identity_name")

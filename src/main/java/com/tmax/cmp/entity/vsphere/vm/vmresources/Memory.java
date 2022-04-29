@@ -1,10 +1,16 @@
 package com.tmax.cmp.entity.vsphere.vm.vmresources;
 
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 import javax.persistence.Embeddable;
 
 @Embeddable
+@Getter
+@Setter
+@ToString
 @NoArgsConstructor
 public class Memory {
 

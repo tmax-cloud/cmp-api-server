@@ -1,11 +1,18 @@
 package com.tmax.cmp.entity.vsphere.vm.vmresources;
 
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 import javax.persistence.Embeddable;
+import java.util.ArrayList;
 
-@NoArgsConstructor
 @Embeddable
+@Getter
+@Setter
+@ToString
+@NoArgsConstructor
 public class BootDevices {
 
 //    @Id
@@ -17,5 +24,5 @@ public class BootDevices {
 
     private String nic;
 
-    private String disks;
+    private ArrayList<String> disks = new ArrayList<>();
 }

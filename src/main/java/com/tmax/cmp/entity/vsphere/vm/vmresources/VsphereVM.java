@@ -4,7 +4,9 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Entity
 @Table(name= "vsphere_vm")
@@ -16,12 +18,6 @@ import java.util.List;
 @AllArgsConstructor
 
 public class VsphereVM implements Serializable {
-
-//    @Id
-//    @Column(name= "vm_id")
-//    @GeneratedValue(strategy = GenerationType.AUTO)
-
-    private Long id;
 
     @Embedded
     @AttributeOverrides({
@@ -48,6 +44,33 @@ public class VsphereVM implements Serializable {
             @AttributeOverride(name = "upgrade_error", column = @Column(name = "hardware_upgrade_error"))})
     private Hardware hardware;
 
+    @OneToMany(mappedBy = "vm", cascade = CascadeType.ALL)
+    private Map<String,Ethernet> nics = new HashMap<String,Ethernet>();
+
+    @OneToMany(mappedBy = "vm", cascade = CascadeType.ALL)
+    private Map<String,Cdroms> cdroms = new HashMap<String,Cdroms>();
+
+    @OneToMany(mappedBy = "vm", cascade = CascadeType.ALL)
+    private Map<String,Disks> disks = new HashMap<String,Disks>();
+
+    @OneToMany(mappedBy = "vm", cascade = CascadeType.ALL)
+    private Map<String,Floppies> floppies = new HashMap<String,Floppies>();
+
+    @OneToMany(mappedBy = "vm", cascade = CascadeType.ALL)
+    private Map<String,NvmeAdapters> nvme_adapters = new HashMap<String,NvmeAdapters>();
+
+    @OneToMany(mappedBy = "vm", cascade = CascadeType.ALL)
+    private Map<String,ParallerPorts> parallel_ports = new HashMap<String,ParallerPorts>();
+
+    @OneToMany(mappedBy = "vm", cascade = CascadeType.ALL)
+    private Map<String,SataAdapters> sata_adapters = new HashMap<String,SataAdapters>();
+
+    @OneToMany(mappedBy = "vm", cascade = CascadeType.ALL)
+    private Map<String,ScsiAdapters> scsi_adapters = new HashMap<String,ScsiAdapters>();
+
+    @OneToMany(mappedBy = "vm", cascade = CascadeType.ALL)
+    private Map<String,SerialPorts> serial_ports = new HashMap<String,SerialPorts>();
+
     private Boolean instant_clone_frozen;
 
     @Embedded
@@ -62,11 +85,18 @@ public class VsphereVM implements Serializable {
 
     private String power_state;
 
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "count", column = @Column(name = "cpu_count")),
+            @AttributeOverride(name = "cores_per_socket", column = @Column(name = "cpu_cores_per_socket")),
+            @AttributeOverride(name = "hot_add_enabled", column = @Column(name = "cpu_hot_add_enabled")),
+            @AttributeOverride(name = "hot_remove_enabled", column = @Column(name = "cpu_hot_remove_enabled"))})
+    private Cpu cpu;
 
     @ElementCollection
     @CollectionTable(name = "boot_devices",
             joinColumns = {
-                    @JoinColumn(name = "vm_id"),
+//                    @JoinColumn(name = "vm_id"),
                     @JoinColumn(name = "bios_uuid"),
                     @JoinColumn(name = "instance_uuid"),
                     @JoinColumn(name = "identity_name")})

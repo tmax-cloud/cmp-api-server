@@ -1,11 +1,17 @@
 package com.tmax.cmp.entity.vsphere.vm.vmresources;
 
 import com.vmware.vcenter.vm.hardware.BootTypes;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 import javax.persistence.Embeddable;
 
 @Embeddable
+@Getter
+@Setter
+@ToString
 @NoArgsConstructor
 public class Boot {
 

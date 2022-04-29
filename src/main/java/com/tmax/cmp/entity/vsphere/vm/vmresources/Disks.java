@@ -17,10 +17,11 @@ public class Disks {
 
     @Id
     @Column(name = "disk_id")
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long disk_id;
 
     @ManyToOne
-    @JoinColumn(name = "vm_id")
+//    @JoinColumn(name = "vm_id")
     @JoinColumn(name = "bios_uuid")
     @JoinColumn(name = "instance_uuid")
     @JoinColumn(name = "identity_name")
@@ -61,12 +62,20 @@ public class Disks {
 }
 
 @Embeddable
+@Getter
+@Setter
+@ToString
+@NoArgsConstructor
 class Disk_Backing {
     private String type;
     private String vmdk_file;
 }
 
 @Embeddable
+@Getter
+@Setter
+@ToString
+@NoArgsConstructor
 class Ide {
     @Column(name = "ide_primary")
     private boolean primary;
@@ -75,18 +84,30 @@ class Ide {
 }
 
 @Embeddable
+@Getter
+@Setter
+@ToString
+@NoArgsConstructor
 class Nvme {
     private int bus;
     private int unit;
 }
 
 @Embeddable
+@Getter
+@Setter
+@ToString
+@NoArgsConstructor
 class Sata {
     private int bus;
     private int unit;
 }
 
 @Embeddable
+@Getter
+@Setter
+@ToString
+@NoArgsConstructor
 class Scsi {
     private int bus;
     private int unit;

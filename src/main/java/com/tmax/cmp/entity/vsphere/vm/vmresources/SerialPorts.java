@@ -17,10 +17,11 @@ public class SerialPorts {
 
     @Id
     @Column(name = "serial_port_id")
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long serial_port_id;
 
     @ManyToOne
-    @JoinColumn(name = "vm_id")
+//    @JoinColumn(name = "vm_id")
     @JoinColumn(name = "bios_uuid")
     @JoinColumn(name = "instance_uuid")
     @JoinColumn(name = "identity_name")
@@ -43,6 +44,10 @@ public class SerialPorts {
 }
 
 @Embeddable
+@Getter
+@Setter
+@ToString
+@NoArgsConstructor
 class SerialPortBacking{
     private boolean auto_detect;
     private String file;

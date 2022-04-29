@@ -4,13 +4,11 @@ import com.tmax.cmp.dto.AWSInstanceDTO;
 import com.tmax.cmp.repository.AWSInstanceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.ec2.Ec2Client;
 import software.amazon.awssdk.services.ec2.model.*;
 
 import java.util.ArrayList;
-import java.util.List;
 
 @Service
 public class AWSInstanceService {
@@ -68,6 +66,7 @@ public class AWSInstanceService {
                 for(Reservation reservation : response.reservations()){
 
                     for(Instance instance : reservation.instances()){
+
                         awsInstanceDTOS.add(AWSInstanceDTO.builder().
                                 instanceId(instance.instanceId()).
                                 imageId(instance.imageId()).
@@ -100,4 +99,6 @@ public class AWSInstanceService {
 
         return awsInstanceDTOS;
     }
+
+
 }

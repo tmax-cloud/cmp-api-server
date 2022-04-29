@@ -17,10 +17,11 @@ public class Ethernet {
 
     @Id
     @Column(name = "ethernet_id")
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long Id;
 
     @ManyToOne
-    @JoinColumn(name = "vm_id")
+//    @JoinColumn(name = "vm_id")
     @JoinColumn(name = "bios_uuid")
     @JoinColumn(name = "instance_uuid")
     @JoinColumn(name = "identity_name")
@@ -45,6 +46,10 @@ public class Ethernet {
 }
 
 @Embeddable
+@Getter
+@Setter
+@ToString
+@NoArgsConstructor
 class Ethernet_Backing{
     private int connection_cookie;
     private String distributed_port;

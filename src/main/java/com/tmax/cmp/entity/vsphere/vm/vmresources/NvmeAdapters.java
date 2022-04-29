@@ -1,6 +1,9 @@
 package com.tmax.cmp.entity.vsphere.vm.vmresources;
 
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 import javax.persistence.*;
 
@@ -9,13 +12,13 @@ import javax.persistence.*;
 @Getter
 @Setter
 @ToString
-@Table(name="sata_adapters")
-public class SataAdapters {
+@Table(name="nvme_adapters")
+public class NvmeAdapters {
 
     @Id
-    @Column(name = "sata_adapter_id")
+    @Column(name = "nvme_adapter_id")
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long sata_adapter_id;
+    private Long nvme_adapter_id;
 
     @ManyToOne
 //    @JoinColumn(name = "vm_id")
@@ -25,7 +28,6 @@ public class SataAdapters {
     private VsphereVM vm;
 
     private String label;
-    private String type;
     private long bus;
     private long pci_slot_number;
 }
