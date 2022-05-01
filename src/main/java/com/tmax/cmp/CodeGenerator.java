@@ -13,7 +13,7 @@ public class CodeGenerator {
                 "\n" +
                 "@Builder\n" +
                 "@Getter\n" +
-                "public class TestDTO {\n" +
+                "public class Tets2DTO {\n" +
                 "    private String instanceId;\n" +
                 "    private String imageId;\n" +
                 "    private String keyName;\n" +
