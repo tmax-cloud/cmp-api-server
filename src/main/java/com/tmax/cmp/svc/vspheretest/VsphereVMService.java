@@ -1,6 +1,7 @@
 package com.tmax.cmp.svc.vspheretest;
 
-import com.google.gson.*;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tmax.cmp.entity.vsphere.vm.vmresources.VsphereVM;
 import com.tmax.cmp.repository.VsphereVMRepository;
 import com.vmware.vapi.bindings.StubConfiguration;
@@ -8,13 +9,10 @@ import com.vmware.vapi.bindings.StubFactory;
 import com.vmware.vcenter.VM;
 import com.vmware.vcenter.VMTypes;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.support.JdbcUtils;
 import org.springframework.stereotype.Service;
 import sun.misc.BASE64Encoder;
 
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -37,141 +35,132 @@ public class VsphereVMService {
 
         VMTypes.Info vmList = vmservice.get(vmName);
 
+
         System.out.println(vmList);
 
 
 
     }
 
-    public void saveVsphereVMInfo(String jsonData) throws NoSuchMethodException,
-            InvocationTargetException, IllegalAccessException,
-            ClassNotFoundException, InstantiationException {
+    public void parseJsonToObject(String jsonData) throws JsonProcessingException {
 
-        jsonData = "{    \n" +
-//                "\"disks\": {\n" +
-//                "        \"2000\": {\n" +
-//                "            \"scsi\": {\n" +
-//                "                \"bus\": 0,\n" +
-//                "                \"unit\": 0\n" +
-//                "            },\n" +
-//                "            \"backing\": {\n" +
-//                "                \"vmdk_file\": \"[datastore3] cmp-test/cmp-test.vmdk\",\n" +
-//                "                \"type\": \"VMDK_FILE\"\n" +
-//                "            },\n" +
-//                "            \"label\": \"Hard disk 1\",\n" +
-//                "            \"type\": \"SCSI\",\n" +
-//                "            \"capacity\": 33285996544\n" +
-//                "        },\n" +
-//                "        \"2001\": {\n" +
-//                "            \"scsi\": {\n" +
-//                "                \"bus\": 0,\n" +
-//                "                \"unit\": 1\n" +
-//                "            },\n" +
-//                "            \"backing\": {\n" +
-//                "                \"vmdk_file\": \"[datastore3] cmp-test/cmp-test_1.vmdk\",\n" +
-//                "                \"type\": \"VMDK_FILE\"\n" +
-//                "            },\n" +
-//                "            \"label\": \"Hard disk 2\",\n" +
-//                "            \"type\": \"SCSI\",\n" +
-//                "            \"capacity\": 34359738368\n" +
-//                "        }\n" +
-//                "    },\n" +
-                "\"power_state\": \"POWERED_ON\",\n" +
-                "\"instant_clone_frozen\": true,\n" +
-                "\"name\": \"test-node\",\n" +
-                "\"identity\": {\n" +
-                "        \"name\": \"shkim-vsphere-md-0-85f84c5646-85mfl\",\n" +
-                "        \"instance_uuid\": \"5bd9deae-b981-47dc-999b-bf0ff3c2d047\",\n" +
-                "        \"bios_uuid\": \"421b4834-d3ff-a7d3-aacc-6fb1fe942181\"\n" +
+        jsonData = "{\n" +
+                "    \"instant_clone_frozen\": false,\n" +
+                "    \"cdroms\": {\n" +
+                "        \"3000\": {\n" +
+                "            \"start_connected\": false,\n" +
+                "            \"backing\": {\n" +
+                "                \"device_access_type\": \"PASSTHRU\",\n" +
+                "                \"type\": \"CLIENT_DEVICE\"\n" +
+                "            },\n" +
+                "            \"allow_guest_control\": true,\n" +
+                "            \"ide\": {\n" +
+                "                \"master\": true,\n" +
+                "                \"primary\": true\n" +
+                "            },\n" +
+                "            \"label\": \"CD/DVD drive 1\",\n" +
+                "            \"state\": \"NOT_CONNECTED\",\n" +
+                "            \"type\": \"IDE\"\n" +
+                "        }\n" +
+                "    },\n" +
+                "    \"memory\": {\n" +
+                "        \"hot_add_increment_size_MiB\": 0,\n" +
+                "        \"size_MiB\": 8192,\n" +
+                "        \"hot_add_enabled\": false,\n" +
+                "        \"hot_add_limit_MiB\": 8192\n" +
+                "    },\n" +
+                "    \"disks\": {\n" +
+                "        \"2000\": {\n" +
+                "            \"scsi\": {\n" +
+                "                \"bus\": 0,\n" +
+                "                \"unit\": 0\n" +
+                "            },\n" +
+                "            \"backing\": {\n" +
+                "                \"vmdk_file\": \"[datastore2] shkim-vsphere-ft6sp/shkim-vsphere-ft6sp.vmdk\",\n" +
+                "                \"type\": \"VMDK_FILE\"\n" +
+                "            },\n" +
+                "            \"label\": \"Hard disk 1\",\n" +
+                "            \"type\": \"SCSI\",\n" +
+                "            \"capacity\": 26843545600\n" +
+                "        }\n" +
+                "    },\n" +
+                "    \"parallel_ports\": {},\n" +
+                "    \"sata_adapters\": {},\n" +
+                "    \"cpu\": {\n" +
+                "        \"hot_remove_enabled\": false,\n" +
+                "        \"count\": 4,\n" +
+                "        \"hot_add_enabled\": false,\n" +
+                "        \"cores_per_socket\": 4\n" +
+                "    },\n" +
+                "    \"scsi_adapters\": {\n" +
+                "        \"1000\": {\n" +
+                "            \"pci_slot_number\": 160,\n" +
+                "            \"scsi\": {\n" +
+                "                \"bus\": 0,\n" +
+                "                \"unit\": 7\n" +
+                "            },\n" +
+                "            \"label\": \"SCSI controller 0\",\n" +
+                "            \"sharing\": \"NONE\",\n" +
+                "            \"type\": \"PVSCSI\"\n" +
+                "        }\n" +
+                "    },\n" +
+                "    \"power_state\": \"POWERED_ON\",\n" +
+                "    \"floppies\": {},\n" +
+                "    \"identity\": {\n" +
+                "        \"name\": \"shkim-vsphere-ft6sp\",\n" +
+                "        \"instance_uuid\": \"fde45a99-fb43-49fb-a993-ad352f657fc3\",\n" +
+                "        \"bios_uuid\": \"421b5fd0-3c85-3e3e-4a76-96de033de204\"\n" +
+                "    },\n" +
+                "    \"nvme_adapters\": {},\n" +
+                "    \"name\": \"shkim-vsphere-ft6sp\",\n" +
+                "    \"nics\": {\n" +
+                "        \"4000\": {\n" +
+                "            \"start_connected\": true,\n" +
+                "            \"pci_slot_number\": 192,\n" +
+                "            \"backing\": {\n" +
+                "                \"network_name\": \"VM Network\",\n" +
+                "                \"type\": \"STANDARD_PORTGROUP\",\n" +
+                "                \"network\": \"network-13\"\n" +
+                "            },\n" +
+                "            \"mac_address\": \"00:50:56:9b:03:cf\",\n" +
+                "            \"mac_type\": \"ASSIGNED\",\n" +
+                "            \"allow_guest_control\": true,\n" +
+                "            \"wake_on_lan_enabled\": true,\n" +
+                "            \"label\": \"Network adapter 1\",\n" +
+                "            \"state\": \"CONNECTED\",\n" +
+                "            \"type\": \"VMXNET3\",\n" +
+                "            \"upt_compatibility_enabled\": true\n" +
+                "        }\n" +
+                "    },\n" +
+                "    \"boot\": {\n" +
+                "        \"delay\": 0,\n" +
+                "        \"retry_delay\": 10000,\n" +
+                "        \"enter_setup_mode\": false,\n" +
+                "        \"type\": \"BIOS\",\n" +
+                "        \"retry\": false\n" +
+                "    },\n" +
+                "    \"serial_ports\": {},\n" +
+                "    \"boot_devices\": [\n" +
+                "        {\n" +
+                "            \"disks\": [\n" +
+                "                \"2000\"\n" +
+                "            ],\n" +
+                "            \"type\": \"DISK\"\n" +
+                "        }\n" +
+                "    ],\n" +
+                "    \"guest_OS\": \"OTHER\",\n" +
+                "    \"hardware\": {\n" +
+                "        \"upgrade_policy\": \"NEVER\",\n" +
+                "        \"upgrade_status\": \"NONE\",\n" +
+                "        \"version\": \"VMX_15\"\n" +
                 "    }\n" +
                 "}";
-        JsonParser parser = new JsonParser();
-        Object obj = parser.parse(jsonData);
-
-        JsonObject jsonObject = (JsonObject)obj;
-        Gson gson = new Gson();
-
-        System.out.println("=======disk key value==========");
-
-        VsphereVM vm = new VsphereVM();
-
-        //keyname 찾기
-        for(String keyName: jsonObject.keySet()){
-
-            System.out.println("key: " + keyName);
-            //다음 value가 json이면
-            if(jsonObject.get(keyName).isJsonObject()){
-
-                System.out.println("value is json");
-                String className = upperCaseFirst(keyName);
-                //value of Json
-//                String className = keyName;
-                JsonElement jsonVal = jsonObject.get(keyName);
-                //Class of key
-                Class<?> testClass = Class.forName("com.tmax.cmp.entity.vsphere.vm.vmresources." + className);
-                //create Class instance of key
-                Object newObj = testClass.newInstance();
-                //get setter method name
-                String methodName = getSetterName(upperCaseFirst(keyName));
-                //method of setter
-                Method setterMethod;
-
-                Object inputVal = testClass.newInstance();
-                inputVal = gson.fromJson(jsonVal,newObj.getClass());
-                try{
-                    setterMethod = vm.getClass().getDeclaredMethod(methodName, newObj.getClass());
-                    setterMethod.invoke(vm,inputVal);
-                } catch (NoSuchMethodException e) {
-                    setterMethod = newObj.getClass().getDeclaredMethod(methodName, newObj.getClass());
-                    setterMethod.invoke(newObj,inputVal);
-                }
 
 
-            }else{ //value가 json이 아니면
-                System.out.println("value is not a json");
-                Object valType;
-                JsonPrimitive jsonVal = jsonObject.get(keyName).getAsJsonPrimitive();
-
-                if(jsonVal.isNumber()){
-                    System.out.println("jsonVal : int");
-                    valType = jsonVal.getAsInt();
-                }else if(jsonVal.isBoolean()){
-                    System.out.println("jsonVal : bool");
-                    valType = jsonVal.getAsBoolean();
-                }else{
-                    System.out.println("jsonVal: String");
-                    valType = jsonVal.getAsString();
-                }
-
-                //키이름으로 메서드 찾아서 setter로 변경하기
-                String methodName = getSetterName(upperCaseFirst(keyName));
-
-                Method method = vm.getClass().getDeclaredMethod(methodName,valType.getClass());
-                method.invoke(vm,valType);
-
-            }
-
-        }
-
-        System.out.println(vm.toString());
+        ObjectMapper mapper = new ObjectMapper();
+        VsphereVM vm = mapper.readValue(jsonData,VsphereVM.class);
         vsphereVMRepository.save(vm);
 
-    }
-
-
-
-    public static String getSetterName(String keyName){
-
-        String methodName = "set" + keyName;
-//        methodName = TiberoUtils.convertUnderscoreNameToPropertyName(methodName);
-
-        return methodName;
-    }
-
-    public static String upperCaseFirst(String val) {
-        char[] arr = val.toCharArray();
-        arr[0] = Character.toUpperCase(arr[0]);
-        return new String(arr);
     }
 
     public void getToken(String server, String username, String password){
@@ -198,9 +187,5 @@ public class VsphereVMService {
         }
 
     }
-
-}
-
-class TiberoUtils extends JdbcUtils{
 
 }
