@@ -1,20 +1,14 @@
 package com.tmax.cmp.svc;
 
 //import javax.security.auth.login.Configuration;
+import org.hibernate.SessionFactory;
+import org.hibernate.cfg.Configuration;
+
 import javax.tools.JavaCompiler;
-import javax.tools.JavaFileManager;
 import javax.tools.ToolProvider;
 import java.io.File;
 import java.io.FileWriter;
 import java.lang.reflect.Method;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.cfg.Configuration;
 
 public class DynamicClassBuilder {
     public String buildClass(String className) throws Exception{
@@ -70,9 +64,9 @@ public class DynamicClassBuilder {
         // Generate table dynamically
         Configuration config = new Configuration();
         config.setProperty("hibernate.connection.driver_class", "com.mysql.jdbc.Driver");
-        config.setProperty("hibernate.connection.url", "jdbc:mysql://192.168.9.20:3306/test");
+        config.setProperty("hibernate.connection.url", "jdbc:mysql://localhost:3306/sys");
         config.setProperty("hibernate.connection.username", "root");
-        config.setProperty("hibernate.connection.password", "root");
+        config.setProperty("hibernate.connection.password", "tmax@23");
         //config.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQL5Dialect");
         config.setProperty("hibernate.hbm2ddl.auto", "update");
         config.addAnnotatedClass(Class.forName("com.tmax.cmp.generated."+className+"DTO"));

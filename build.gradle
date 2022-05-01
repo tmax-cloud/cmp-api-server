@@ -19,6 +19,7 @@ repositories {
 }
 
 dependencies {
+	implementation fileTree(dir: 'libs', include: ['*.jar'])
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	//compileOnly 'org.projectlombok:lombok'
 	implementation 'org.projectlombok:lombok'
@@ -29,6 +30,10 @@ dependencies {
 	implementation 'software.amazon.awssdk:ec2'
 	implementation 'software.amazon.awssdk:iam'
 	implementation 'software.amazon.awssdk:costexplorer'
+
+	// https://mvnrepository.com/artifact/com.google.code.gson/gson
+	implementation 'com.google.code.gson:gson:2.8.5'
+
 
 
 	// Hibernate
