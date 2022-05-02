@@ -1,4 +1,4 @@
-package com.tmax.cmp.svc.vspheretest;
+package com.tmax.cmp.svc.vsphere;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -37,8 +37,6 @@ public class VsphereVMService {
 
 
         System.out.println(vmList);
-
-
 
     }
 
