@@ -1,15 +1,8 @@
-package com.tmax.cmp.svc;
+package com.tmax.cmp.svc.aws;
 
 import org.springframework.stereotype.Service;
 import software.amazon.awssdk.services.ec2.Ec2Client;
 import software.amazon.awssdk.services.ec2.model.*;
-import software.amazon.awssdk.services.ec2.paginators.DescribeVpcsIterable;
-import software.amazon.awssdk.services.iam.IamClient;
-import software.amazon.awssdk.services.iam.model.ListAccessKeysRequest;
-import software.amazon.awssdk.services.iam.model.ListAccessKeysResponse;
-
-
-import java.util.ArrayList;
 
 @Service
 public class AWSInstanceSubResourceService {

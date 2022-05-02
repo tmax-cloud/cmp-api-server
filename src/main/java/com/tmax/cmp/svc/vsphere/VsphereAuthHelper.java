@@ -1,4 +1,4 @@
-package com.tmax.cmp.svc.vspheretest;
+package com.tmax.cmp.svc.vsphere;
 
 import com.vmware.authorization.utils.SslUtil;
 import com.vmware.cis.Session;

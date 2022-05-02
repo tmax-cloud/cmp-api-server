@@ -1,4 +1,4 @@
-package com.tmax.cmp.svc.vspheretest;
+package com.tmax.cmp.svc.vsphere;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tmax.cmp.entity.vsphere.vm.vmresources.Disks;

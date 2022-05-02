@@ -1,4 +1,4 @@
-package com.tmax.cmp.svc.vspheretest;
+package com.tmax.cmp.svc.vsphere;
 
 import com.vmware.vapi.bindings.StubConfigurationBase;
 import com.vmware.vapi.bindings.client.RetryPolicy;
