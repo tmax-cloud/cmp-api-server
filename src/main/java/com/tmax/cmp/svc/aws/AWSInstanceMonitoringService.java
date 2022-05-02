@@ -1,4 +1,4 @@
-package com.tmax.cmp.svc;
+package com.tmax.cmp.svc.aws;
 
 
 import org.springframework.stereotype.Service;

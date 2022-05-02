@@ -1,6 +1,6 @@
-package com.tmax.cmp.controller;
+package com.tmax.cmp.controller.aws;
 
-import com.tmax.cmp.svc.AWSInstanceMonitoringService;
+import com.tmax.cmp.svc.aws.AWSInstanceMonitoringService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -10,7 +10,7 @@ import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.ec2.Ec2Client;
 
 @RestController
-@RequestMapping("/api/v1/instancemanaging")
+@RequestMapping("/api/v1/instance/managing")
 public class AWSinstanceManagingController {
 
     @Autowired

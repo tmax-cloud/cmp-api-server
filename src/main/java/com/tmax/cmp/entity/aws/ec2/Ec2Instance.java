@@ -1,20 +1,25 @@
-package com.tmax.cmp.dto;
+package com.tmax.cmp.entity.aws.ec2;
 
-import antlr.collections.List;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import software.amazon.awssdk.services.ec2.model.*;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.time.Instant;
 
-@Data
+
 @Entity
 @Builder
+@Getter
 @Table(name = "AWSInstance")
 @NoArgsConstructor
 @AllArgsConstructor
-public class AWSInstanceDTO {
+public class Ec2Instance {
     private Integer amiLaunchIndex;
 
     private String imageId;
@@ -28,10 +33,11 @@ public class AWSInstanceDTO {
 
     private String keyName;
 
-    private java.util.Date launchTime;
+    private Instant launchTime;
 
     private Monitoring monitoring;
 
+    @Column(columnDefinition = "varchar(1000)")
     private Placement placement;
 
     private String platform;
@@ -40,7 +46,7 @@ public class AWSInstanceDTO {
 
     private String privateIpAddress;
 
-    private ProductCode productCodes;
+//    private List<ProductCode> productCodes;
 
     private String publicDnsName;
 
@@ -48,8 +54,11 @@ public class AWSInstanceDTO {
 
     private String ramdiskId;
 
-    private String stateName;
+    private StateReason stateReason;
 
+    private String state;
+
+    @Column(columnDefinition = "varchar(500)")
     private String stateTransitionReason;
 
     private String subnetId;
@@ -58,7 +67,7 @@ public class AWSInstanceDTO {
 
     private String architecture;
 
-    private BlockDeviceMapping blockDeviceMappings;
+//    private List<InstanceBlockDeviceMapping> blockDeviceMappings;
 
     private String clientToken;
 
@@ -68,15 +77,16 @@ public class AWSInstanceDTO {
 
     private String hypervisor;
 
+    @Column(columnDefinition = "varchar(500)")
     private IamInstanceProfile iamInstanceProfile;
 
     private String instanceLifecycle;
 
-    private ElasticGpuAssociation elasticGpuAssociation;
-
-    private ElasticInferenceAcceleratorAssociation elasticInferenceAcceleratorAssociations;
-
-    private NetworkInterface networkInterfaces;
+//    private List<ElasticGpuAssociation> elasticGpuAssociation;
+//
+//    private List<ElasticInferenceAcceleratorAssociation> elasticInferenceAcceleratorAssociations;
+//
+//    private List<InstanceNetworkInterface> networkInterfaces;
 
     private String outpostArn;
 
@@ -84,7 +94,7 @@ public class AWSInstanceDTO {
 
     private String rootDeviceType;
 
-    private SecurityGroup securityGroups;
+//    private List<GroupIdentifier> securityGroups;
 
     private Boolean sourceDestCheck;
 
@@ -92,25 +102,30 @@ public class AWSInstanceDTO {
 
     private String sriovNetSupport;
 
-    private StateReason stateReason;
-
-    private Tag tags;
+//    private List<Tag> tags;
 
     private String virtualizationType;
 
+    @Column(columnDefinition = "varchar(500)")
     private CpuOptions cpuOptions;
 
     private String capacityReservationId;
 
+    @Column(columnDefinition = "varchar(1000)")
     private CapacityReservationSpecificationResponse capacityReservationSpecification;
 
+    @Column(columnDefinition = "varchar(500)")
     private HibernationOptions hibernationOptions;
 
-    private LicenseConfiguration licenses;
+//    private List<LicenseConfiguration> licenses;
 
+    @Column(columnDefinition = "varchar(1000)")
     private InstanceMetadataOptionsResponse metadataOptions;
 
+    @Column(columnDefinition = "varchar(500)")
     private EnclaveOptions enclaveOptions;
 
     private String bootMode;
+
+    private String region;
 }
