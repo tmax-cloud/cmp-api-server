@@ -4,7 +4,9 @@ import com.tmax.cmp.configuration.ClientConfig;
 import com.tmax.cmp.entity.aws.ec2.Ec2Instance;
 import com.tmax.cmp.entity.common.client.Client;
 import com.tmax.cmp.entity.common.client.awsClient;
+import com.tmax.cmp.entity.common.client.vSphereClient;
 import com.tmax.cmp.svc.aws.AWSInstanceService;
+import com.vmware.vcenter.VMTypes;
 import net.bytebuddy.implementation.bind.MethodDelegationBinder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -66,9 +68,9 @@ public class AWSInstanceCRUDController {
     @GetMapping("/test")
     public void test() {
         AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(ClientConfig.class);
-        List<Client> clients = (ArrayList<Client>)context.getBean("clients");
+        List<awsClient> clients = (ArrayList<awsClient>)context.getBean("awsClients");
 
-        for(Client client : clients) {
+        for(awsClient client : clients) {
             boolean done = false;
             String nextToken = null;
             ArrayList<Ec2Instance> awsInstanceDTOS = new ArrayList<Ec2Instance>();
@@ -76,7 +78,7 @@ public class AWSInstanceCRUDController {
                 do{
                     DescribeInstancesRequest request = DescribeInstancesRequest
                             .builder().maxResults(10).nextToken(nextToken).build();
-                    DescribeInstancesResponse response = ((awsClient)client).getEc2Client().describeInstances(request);
+                    DescribeInstancesResponse response = client.getEc2Client().describeInstances(request);
 
                     for(Reservation reservation : response.reservations()){
 
@@ -122,7 +124,7 @@ public class AWSInstanceCRUDController {
                                     bootMode(instance.bootModeAsString()).build());
 
 
-                            System.out.println("Region is " + ((awsClient) client).getRegion() );
+                            System.out.println("Region is " + client.getRegion() );
                             System.out.println("Instance Id is " + instance.instanceId());
                             System.out.println("state as string: " + instance.state().nameAsString());
                             System.out.println("state: " + instance.state());
@@ -134,6 +136,16 @@ public class AWSInstanceCRUDController {
             }catch (Ec2Exception e){
                 System.err.println(e.awsErrorDetails().errorMessage());
                 System.exit(1);
+            }
+        }
+
+
+        List<vSphereClient> vclients = (ArrayList<vSphereClient>)context.getBean("vSphereClients");
+        for(vSphereClient client : vclients) {
+
+            List<VMTypes.Summary> vmList = client.getVmClient().list(new VMTypes.FilterSpec());
+            for (VMTypes.Summary vmSummary : vmList) {
+                System.out.println(vmSummary);
             }
         }
     }

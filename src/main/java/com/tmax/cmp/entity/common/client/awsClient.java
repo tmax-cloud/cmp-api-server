@@ -13,36 +13,22 @@ import java.util.List;
 public class awsClient implements Client{
 
 
-    private AwsBasicCredentials awsCreds;
     @Getter
     private String region;
     @Getter
     private Ec2Client ec2Client;
     @Getter
     private CostExplorerClient costClient;
-    @Getter
-    private List<Ec2Client> ec2ClientList;
 
-    public awsClient(String accessKey, String secretKey, String region){
+    public awsClient(String accessKey, String secretKey, String region) {
+        AwsBasicCredentials awsCredential = AwsBasicCredentials.create(accessKey, secretKey);
         this.region = region;
-        awsCreds = AwsBasicCredentials.create(accessKey, secretKey);
         ec2Client = Ec2Client.builder()
-                .credentialsProvider(StaticCredentialsProvider.create(awsCreds))
+                .credentialsProvider(StaticCredentialsProvider.create(awsCredential))
                 .region(Region.of(region))
                 .build();
         costClient = CostExplorerClient.builder()
                 .region(Region.of(region))
                 .build();
-
-
-
-//        ec2ClientList = new ArrayList<Ec2Client>();
-//        for (Region region : Region.regions()) {
-//            ec2Client = Ec2Client.builder()
-//                    .credentialsProvider(StaticCredentialsProvider.create(awsCreds))
-//                    .region(region)
-//                    .build();
-//            ec2ClientList.add(ec2Client);
-//        }
     }
 }
