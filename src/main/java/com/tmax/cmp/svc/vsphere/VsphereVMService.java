@@ -8,9 +8,9 @@ import com.vmware.vapi.bindings.StubConfiguration;
 import com.vmware.vapi.bindings.StubFactory;
 import com.vmware.vcenter.VM;
 import com.vmware.vcenter.VMTypes;
+import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import sun.misc.BASE64Encoder;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -170,7 +170,8 @@ public class VsphereVMService {
             HttpURLConnection urlConnection = (HttpURLConnection)connection;
             urlConnection.setRequestMethod("POST");
 
-            String auth= "Basic" + new BASE64Encoder().encode((username + ":" + password).getBytes());
+
+            String auth= "Basic" + Base64.encodeBase64((username + ":" + password).getBytes());
 
             urlConnection.setRequestProperty("Authorization", auth);
 
