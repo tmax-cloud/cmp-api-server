@@ -12,6 +12,7 @@ import java.util.Map;
 @Table(name= "vsphere_vm")
 @ToString
 @EqualsAndHashCode
+@Builder
 @Getter
 @Setter
 @NoArgsConstructor

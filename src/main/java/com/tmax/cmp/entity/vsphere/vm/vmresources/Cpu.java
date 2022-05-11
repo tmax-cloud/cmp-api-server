@@ -1,9 +1,6 @@
 package com.tmax.cmp.entity.vsphere.vm.vmresources;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 import javax.persistence.Embeddable;
 
@@ -11,7 +8,9 @@ import javax.persistence.Embeddable;
 @ToString
 @Getter
 @Setter
+@Builder
 @NoArgsConstructor
+@AllArgsConstructor
 public class Cpu {
 
     private long count;

@@ -12,10 +12,7 @@ import com.vmware.vapi.protocol.HttpConfiguration;
 import com.vmware.vapi.protocol.ProtocolConnection;
 import com.vmware.vapi.security.SessionSecurityContext;
 import com.vmware.vcenter.VM;
-import com.vmware.vcenter.VMTypes;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public class AuthUtils {
@@ -63,7 +60,7 @@ public class AuthUtils {
         return sslConfig;
     }
 
-    public void getVmListFromVsphere(
+    public VM makeVMClient(
         String server, String username, String password) throws Exception {
 
         HttpConfiguration httpConfig = buildHttpConfiguration();
@@ -90,11 +87,8 @@ public class AuthUtils {
 
         //vmService(Client) 구성
         VM vmService = this.stubFactory.createStub(VM.class,stubConfig);
-        List<VMTypes.Summary> vmList = vmService.list(new VMTypes.FilterSpec());
 
-        for(VMTypes.Summary vmSummary : vmList){
-            System.out.println(vmSummary);
-        }
+        return vmService;
     }
 
 }

@@ -8,8 +8,10 @@ import java.io.Serializable;
 
 @Embeddable
 @NoArgsConstructor
+@AllArgsConstructor
 @ToString
 @Getter
+@Builder
 @Setter
 @EqualsAndHashCode
 public class Identity implements Serializable {

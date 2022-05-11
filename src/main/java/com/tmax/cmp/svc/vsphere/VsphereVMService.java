@@ -2,28 +2,32 @@ package com.tmax.cmp.svc.vsphere;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.tmax.cmp.configuration.ClientConfig;
+import com.tmax.cmp.entity.common.client.vSphereClient;
+import com.tmax.cmp.entity.vsphere.vm.vmresources.Cpu;
+import com.tmax.cmp.entity.vsphere.vm.vmresources.Identity;
 import com.tmax.cmp.entity.vsphere.vm.vmresources.VsphereVM;
 import com.tmax.cmp.repository.VsphereVMRepository;
 import com.vmware.vapi.bindings.StubConfiguration;
 import com.vmware.vapi.bindings.StubFactory;
 import com.vmware.vcenter.VM;
 import com.vmware.vcenter.VMTypes;
-import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 @Service
 public class VsphereVMService {
 
     @Autowired
     VsphereVMRepository vsphereVMRepository;
+
+    @Autowired
+    AuthUtils authUtils;
 
     public void getVM(StubFactory stubFactory, StubConfiguration sessionStubConfig,
                       String vmName){
@@ -161,29 +165,69 @@ public class VsphereVMService {
 
     }
 
-    public void getToken(String server, String username, String password){
+    public ArrayList<String> getVMListFromServer(VM vmService) throws Exception{
 
-        String loginURL = "https://" + server + "/rest/com/vmware/cis/session";
-        try{
-            URL url = new URL(loginURL);
-            URLConnection connection = url.openConnection();
-            HttpURLConnection urlConnection = (HttpURLConnection)connection;
-            urlConnection.setRequestMethod("POST");
+        List<VMTypes.Summary> vmList = vmService.list(new VMTypes.FilterSpec());
+        ArrayList<String> vmNames = new ArrayList<>();
 
-
-            String auth= "Basic" + Base64.encodeBase64((username + ":" + password).getBytes());
-
-            urlConnection.setRequestProperty("Authorization", auth);
-
-
-            int responseCode = urlConnection.getResponseCode();
-
-            System.out.println("responseCode: " + responseCode);
-        } catch (MalformedURLException malE){
-            malE.printStackTrace();
-        } catch (IOException ioE) {
-            ioE.printStackTrace();
+        for(VMTypes.Summary summary : vmList){
+            System.out.println(summary);
+            vmNames.add(summary.getVm());
         }
+
+        return vmNames;
+    }
+
+    public VMTypes.Info getVMInfoFromServer(VM vmService, String vmName) throws Exception{
+
+        VMTypes.Info vmInfo = vmService.get(vmName);
+
+        System.out.println(vmInfo);
+
+        return vmInfo;
+    }
+
+    public void syncVMFromServerToDB() throws Exception{
+
+        AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(ClientConfig.class);
+        List<vSphereClient> clients = (ArrayList<vSphereClient>)context.getBean("vSphereClients");
+
+        for(vSphereClient vSphereClient : clients){
+            VM vmService = vSphereClient.getVmClient();
+
+            List<String> vmNames = getVMListFromServer(vmService);
+
+            for(String vmName : vmNames){
+
+                try{
+                    VMTypes.Info vmInfo = getVMInfoFromServer(vmService, vmName);
+                    VsphereVM vm = VsphereVM.builder()
+                            .name(vmInfo.getName())
+                            .guest_OS(vmInfo.getGuestOS().toString())
+                            .power_state(vmInfo.getPowerState().getEnumValue().toString())
+                            .identity(
+                                    Identity.builder()
+                                            .bios_uuid(vmInfo.getIdentity().getBiosUuid())
+                                            .instance_uuid(vmInfo.getIdentity().getInstanceUuid())
+                                            .name(vmInfo.getName()).build()
+                            )
+                            .cpu(
+                                    Cpu.builder()
+                                            .count(vmInfo.getCpu().getCount())
+                                            .cores_per_socket(vmInfo.getCpu().getCoresPerSocket())
+                                            .hot_add_enabled(vmInfo.getCpu().getHotAddEnabled())
+                                            .hot_remove_enabled(vmInfo.getCpu().getHotAddEnabled()).build()
+                            ).build();
+                    vsphereVMRepository.save(vm);
+                }catch (Exception e){
+                    e.getMessage();
+                }
+
+            }
+        }
+
+
+
 
     }
 

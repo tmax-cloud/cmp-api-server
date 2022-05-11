@@ -26,7 +26,7 @@ public class VsphereVMController {
                          @RequestParam(name = "password", required = true) String password){
 
         try{
-            authUtils.getVmListFromVsphere(server,username,password);
+            authUtils.makeVMClient(server,username,password);
         }catch (Exception e){
             e.printStackTrace();
             e.getMessage();
@@ -39,6 +39,18 @@ public class VsphereVMController {
         System.out.println("============controller json====================");
         System.out.println(json);
         vsphereVMService.parseJsonToObject(json);
+    }
+
+    @GetMapping("/syncVm")
+    public void syncVm(){
+
+        try{
+            vsphereVMService.syncVMFromServerToDB();
+        }catch (Exception e){
+            e.printStackTrace();
+            e.getMessage();
+        }
+
     }
 
 }
