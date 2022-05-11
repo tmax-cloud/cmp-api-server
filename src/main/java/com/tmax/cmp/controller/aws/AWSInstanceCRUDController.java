@@ -2,12 +2,10 @@ package com.tmax.cmp.controller.aws;
 
 import com.tmax.cmp.configuration.ClientConfig;
 import com.tmax.cmp.entity.aws.ec2.Ec2Instance;
-import com.tmax.cmp.entity.common.client.Client;
 import com.tmax.cmp.entity.common.client.awsClient;
 import com.tmax.cmp.entity.common.client.vSphereClient;
 import com.tmax.cmp.svc.aws.AWSInstanceService;
 import com.vmware.vcenter.VMTypes;
-import net.bytebuddy.implementation.bind.MethodDelegationBinder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -120,7 +118,7 @@ public class AWSInstanceCRUDController {
                                     capacityReservationSpecification(instance.capacityReservationSpecification()).
                                     hibernationOptions(instance.hibernationOptions()).
                                     metadataOptions(instance.metadataOptions()).
-                                    enclaveOptions(instance.enclaveOptions()).
+//                                    enclaveOptions(instance.enclaveOptions()).
                                     bootMode(instance.bootModeAsString()).build());
 
 

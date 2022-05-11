@@ -2,6 +2,7 @@ package com.tmax.cmp.controller.vsphere;
 
 //import com.tmax.cmp.svc.auth.VsphereVMService;
 
+import com.tmax.cmp.svc.vsphere.AuthUtils;
 import com.tmax.cmp.svc.vsphere.VsphereVMService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,13 +17,20 @@ public class VsphereVMController {
     @Autowired
     VsphereVMService vsphereVMService;
 
-    @GetMapping("/gettoken")
+    @Autowired
+    AuthUtils authUtils;
+
+    @GetMapping("/getVmListFromServer")
     public void getToken(@RequestParam(name = "server", required = true) String server,
                          @RequestParam(name = "username", required = true) String username,
                          @RequestParam(name = "password", required = true) String password){
 
-
-        vsphereVMService.getToken(server,username,password);
+        try{
+            authUtils.getVmListFromVsphere(server,username,password);
+        }catch (Exception e){
+            e.printStackTrace();
+            e.getMessage();
+        }
     }
 
     @GetMapping("/parsejson")

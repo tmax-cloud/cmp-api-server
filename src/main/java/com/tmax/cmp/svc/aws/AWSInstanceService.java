@@ -119,7 +119,7 @@ public class AWSInstanceService {
                                 hibernationOptions(instance.hibernationOptions()).
 //                                licenses(instance.licenses()).
                                 metadataOptions(instance.metadataOptions()).
-                                enclaveOptions(instance.enclaveOptions()).
+//                                enclaveOptions(instance.enclaveOptions()).
                                 bootMode(instance.bootModeAsString()).
                                 region(region).build());
 

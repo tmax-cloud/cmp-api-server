@@ -63,7 +63,7 @@ public class AuthUtils {
         return sslConfig;
     }
 
-    public void loginByUsernameAndPassword(
+    public void getVmListFromVsphere(
         String server, String username, String password) throws Exception {
 
         HttpConfiguration httpConfig = buildHttpConfiguration();

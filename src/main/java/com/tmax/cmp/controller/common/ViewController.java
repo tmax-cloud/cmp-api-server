@@ -24,7 +24,9 @@ public class ViewController {
 
         HashMap<Integer,VMView> response = viewService.getAllInstancesAndVms();
 
-        System.out.println(response.get(1));
+        for(VMView view : response.values()){
+            System.out.println(view);
+        }
         return new ResponseEntity<Map<Integer,VMView>>(response, HttpStatus.OK);
     }
 

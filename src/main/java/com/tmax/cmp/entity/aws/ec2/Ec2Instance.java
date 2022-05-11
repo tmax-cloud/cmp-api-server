@@ -6,10 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import software.amazon.awssdk.services.ec2.model.*;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.time.Instant;
 
 
@@ -122,8 +119,9 @@ public class Ec2Instance {
     @Column(columnDefinition = "varchar(1000)")
     private InstanceMetadataOptionsResponse metadataOptions;
 
-    @Column(columnDefinition = "varchar(500)")
-    private EnclaveOptions enclaveOptions;
+//    @Column(columnDefinition = "varchar(500)", nullable = false)
+//    @Embedded
+//    private EnclaveOptions enclaveOptions = new EnclaveOptions();
 
     private String bootMode;
 

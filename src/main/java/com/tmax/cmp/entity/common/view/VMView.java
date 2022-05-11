@@ -12,8 +12,10 @@ import javax.persistence.Table;
 public class VMView {
 
     @Id
-    private String id;
-    private String os;
-    private String state;
+    private String id;      //uuid
+    private String os;      //platform
+    private String state;   //state
+//    private int cpu;
+//    private int memory;
 
 }
