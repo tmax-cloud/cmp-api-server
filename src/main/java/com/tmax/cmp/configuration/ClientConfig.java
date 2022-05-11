@@ -19,12 +19,6 @@ public class ClientConfig {
         awsClient client;
 
 //        for( ){                                       // Hibernate 기반 credential querying
-        client = new awsClient("AKIAQDF4RKX2TA6RSGWV","SqsKfTVbrZ5m5SZPqnu5ZWpFj4lRybFjTR93N3bu", "us-east-2");
-        clientList.add(client);
-
-
-        client = new awsClient("AKIAQDF4RKX2TA6RSGWV","SqsKfTVbrZ5m5SZPqnu5ZWpFj4lRybFjTR93N3bu", "ap-northeast-1");
-        clientList.add(client);
 //        }
 
         return clientList;
