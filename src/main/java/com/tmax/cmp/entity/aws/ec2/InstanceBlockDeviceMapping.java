@@ -6,14 +6,17 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.Embeddable;
+import javax.persistence.Embedded;
 
 @Embeddable
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Builder
-public class EnclaveOptions {
+public class InstanceBlockDeviceMapping {
 
-    private boolean enabled;
+    private String deviceName;
 
+    @Embedded
+    private EbsInstanceBlockDevice ebs;
 }

@@ -2,18 +2,17 @@ package com.tmax.cmp.entity.aws.ec2;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.Embeddable;
 
-@Embeddable
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Getter
-@Builder
-public class EnclaveOptions {
+@Embeddable
+public class ProductCode {
 
-    private boolean enabled;
+    private String productCodeId;
 
+    private String productCodeType;
 }

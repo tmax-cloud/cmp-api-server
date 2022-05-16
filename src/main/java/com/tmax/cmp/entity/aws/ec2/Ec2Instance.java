@@ -8,6 +8,7 @@ import software.amazon.awssdk.services.ec2.model.*;
 
 import javax.persistence.*;
 import java.time.Instant;
+import java.util.List;
 
 
 @Entity
@@ -32,9 +33,20 @@ public class Ec2Instance {
 
     private Instant launchTime;
 
+    @Embedded
+    @AttributeOverride(name = "state", column = @Column(name = "monitoring_state"))
     private Monitoring monitoring;
 
-    @Column(columnDefinition = "varchar(1000)")
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "availabilityZone", column = @Column(name = "placement_availability_zone")),
+            @AttributeOverride(name = "affinity", column = @Column(name = "placement_affinity")),
+            @AttributeOverride(name = "groupName", column = @Column(name = "placement_group_name")),
+            @AttributeOverride(name = "partitionNumber", column = @Column(name = "placement_partition_number")),
+            @AttributeOverride(name = "hostId", column = @Column(name = "placement_host_id")),
+            @AttributeOverride(name = "tenancy", column = @Column(name = "placement_tenancy")),
+            @AttributeOverride(name = "spreadDomain", column = @Column(name = "placement_spread_domain")),
+            @AttributeOverride(name = "hostResourceGroupArn", column = @Column(name = "placement_host_resource_group_arn"))})
     private Placement placement;
 
     private String platform;
@@ -43,7 +55,9 @@ public class Ec2Instance {
 
     private String privateIpAddress;
 
-//    private List<ProductCode> productCodes;
+    @ElementCollection
+    @CollectionTable(name="ProductCode", joinColumns = @JoinColumn(name = "instanceId"))
+    private List<ProductCode> productCodes;
 
     private String publicDnsName;
 
@@ -51,9 +65,17 @@ public class Ec2Instance {
 
     private String ramdiskId;
 
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "code", column = @Column(name = "state_reason_code")),
+            @AttributeOverride(name = "message", column = @Column(name = "state_reason_message"))})
     private StateReason stateReason;
 
-    private String state;
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "code", column = @Column(name = "state_code")),
+            @AttributeOverride(name = "name", column = @Column(name = "state_name"))})
+    private InstanceState state;
 
     @Column(columnDefinition = "varchar(500)")
     private String stateTransitionReason;
@@ -64,7 +86,9 @@ public class Ec2Instance {
 
     private String architecture;
 
-//    private List<InstanceBlockDeviceMapping> blockDeviceMappings;
+    @ElementCollection
+    @CollectionTable(name="InstanceBlockDeviceMapping", joinColumns = @JoinColumn(name = "instanceId"))
+    private List<InstanceBlockDeviceMapping> blockDeviceMappings;
 
     private String clientToken;
 
@@ -74,16 +98,25 @@ public class Ec2Instance {
 
     private String hypervisor;
 
-    @Column(columnDefinition = "varchar(500)")
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "arn", column = @Column(name = "iam_instance_profile_arn")),
+            @AttributeOverride(name = "id", column = @Column(name = "iam_instance_profile_id"))})
     private IamInstanceProfile iamInstanceProfile;
 
     private String instanceLifecycle;
 
-//    private List<ElasticGpuAssociation> elasticGpuAssociation;
-//
-//    private List<ElasticInferenceAcceleratorAssociation> elasticInferenceAcceleratorAssociations;
-//
-//    private List<InstanceNetworkInterface> networkInterfaces;
+    @ElementCollection
+    @CollectionTable(name="ElasticGpuAssociation", joinColumns = @JoinColumn(name = "instanceId"))
+    private List<ElasticGpuAssociation> elasticGpuAssociation;
+
+    @ElementCollection
+    @CollectionTable(name="ElasticInferenceAcceleratorAssociation", joinColumns = @JoinColumn(name = "instanceId"))
+    private List<ElasticInferenceAcceleratorAssociation> elasticInferenceAcceleratorAssociations;
+
+    @ElementCollection
+    @CollectionTable(name="InstanceNetworkInterface", joinColumns = @JoinColumn(name = "instanceId"))
+    private List<InstanceNetworkInterface> networkInterfaces;
 
     private String outpostArn;
 
@@ -91,7 +124,9 @@ public class Ec2Instance {
 
     private String rootDeviceType;
 
-//    private List<GroupIdentifier> securityGroups;
+    @ElementCollection
+    @CollectionTable(name="GroupIdentifier", joinColumns = @JoinColumn(name = "instanceId"))
+    private List<GroupIdentifier> securityGroups;
 
     private Boolean sourceDestCheck;
 
@@ -99,29 +134,46 @@ public class Ec2Instance {
 
     private String sriovNetSupport;
 
-//    private List<Tag> tags;
+    @ElementCollection
+    @CollectionTable(name="Tags", joinColumns = @JoinColumn(name = "instanceId"))
+    private List<Tag> tags;
 
     private String virtualizationType;
 
-    @Column(columnDefinition = "varchar(500)")
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "coreCount", column = @Column(name = "cpu_options_core_count")),
+            @AttributeOverride(name = "threadsPerCore", column = @Column(name = "cpu_options_threads_per_core"))})
     private CpuOptions cpuOptions;
 
     private String capacityReservationId;
 
-    @Column(columnDefinition = "varchar(1000)")
+    @Embedded
     private CapacityReservationSpecificationResponse capacityReservationSpecification;
 
-    @Column(columnDefinition = "varchar(500)")
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "configured", column = @Column(name = "hibernation_options_configured"))})
     private HibernationOptions hibernationOptions;
 
-//    private List<LicenseConfiguration> licenses;
+    @ElementCollection
+    @CollectionTable(name="LicenseConfiguration", joinColumns = @JoinColumn(name = "instanceId"))
+    private List<LicenseConfiguration> licenses;
 
-    @Column(columnDefinition = "varchar(1000)")
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "state", column = @Column(name = "metadata_options_state")),
+            @AttributeOverride(name = "httpTokens", column = @Column(name = "metadata_options_http_tokens")),
+            @AttributeOverride(name = "httpPutResponseHopLimit", column = @Column(name = "metadata_options_http_put_response_hop_limit")),
+            @AttributeOverride(name = "httpEndpoint", column = @Column(name = "metadata_options_http_endpoint")),
+            @AttributeOverride(name = "httpProtocolIpv6", column = @Column(name = "metadata_options_http_protocol_ipv6")),
+            @AttributeOverride(name = "instanceMetadataTags", column = @Column(name = "metadata_options_instance_metadata_tags"))})
     private InstanceMetadataOptionsResponse metadataOptions;
 
-//    @Column(columnDefinition = "varchar(500)", nullable = false)
-//    @Embedded
-//    private EnclaveOptions enclaveOptions = new EnclaveOptions();
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "enabled", column = @Column(name = "enclave_options_enabled"))})
+    private EnclaveOptions enclaveOptions = new EnclaveOptions();
 
     private String bootMode;
 
