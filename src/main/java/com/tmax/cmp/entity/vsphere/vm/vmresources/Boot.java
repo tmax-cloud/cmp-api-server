@@ -1,18 +1,17 @@
 package com.tmax.cmp.entity.vsphere.vm.vmresources;
 
 import com.vmware.vcenter.vm.hardware.BootTypes;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 import javax.persistence.Embeddable;
 
 @Embeddable
 @Getter
 @Setter
+@Builder
 @ToString
 @NoArgsConstructor
+@AllArgsConstructor
 public class Boot {
 
     private long delay;
