@@ -1,7 +1,7 @@
 package com.tmax.cmp.controller.aws;
 
 import com.tmax.cmp.configuration.ClientConfig;
-import com.tmax.cmp.entity.aws.ec2.Ec2Instance;
+import com.tmax.cmp.entity.aws.ec2.*;
 import com.tmax.cmp.entity.common.client.awsClient;
 import com.tmax.cmp.entity.common.client.vSphereClient;
 import com.tmax.cmp.svc.aws.AWSInstanceService;
@@ -31,7 +31,7 @@ public class AWSInstanceCRUDController {
     private AWSInstanceService awsInstanceService;
 
     @GetMapping("/sync")
-    public void syncInstance(@RequestParam(name = "region", required = false) String region){
+    public void syncInstance(@RequestParam(name = "region", required = false) String region) throws Exception {
 
         ArrayList<Ec2Instance> instanceList = awsInstanceService.getAllInstanceFromAWS(region);
 
@@ -89,36 +89,62 @@ public class AWSInstanceCRUDController {
                                     kernelId(instance.kernelId()).
                                     keyName(instance.keyName()).
                                     launchTime(instance.launchTime()).
-                                    placement(instance.placement()).
+                                    placement(Placement.builder().availabilityZone(instance.placement().availabilityZone())
+                                            .affinity(instance.placement().affinity())
+                                            .groupName(instance.placement().groupName())
+                                            .partitionNumber(instance.placement().partitionNumber())
+                                            .hostId(instance.placement().hostId())
+                                            .tenancy(instance.placement().tenancyAsString())
+                                            .spreadDomain(instance.placement().spreadDomain())
+                                            .hostResourceGroupArn(instance.placement().hostResourceGroupArn()).build()).
                                     platform(instance.platformAsString()).
                                     privateDnsName(instance.privateDnsName()).
                                     privateIpAddress(instance.privateIpAddress()).
+//                                  productCodes(ProductCode.builder().productCodeId(instance.productCodes().)).
                                     publicDnsName(instance.publicDnsName()).
                                     ramdiskId(instance.ramdiskId()).
-                                    stateReason(instance.stateReason()).
-                                    state(instance.state().nameAsString()).
+//                                 stateReason(StateReason.builder().code(instance.stateReason().code()).message(instance.stateReason().message()).build()).
+                                    state(InstanceState.builder().code(instance.state().code()).name(instance.state().nameAsString()).build()).
                                     stateTransitionReason(instance.stateTransitionReason()).
                                     subnetId(instance.subnetId()).
                                     vpcId(instance.vpcId()).
                                     architecture(instance.architectureAsString()).
+//                                   blockDeviceMappings(instance.blockDeviceMappings()).
                                     clientToken(instance.clientToken()).
                                     ebsOptimized(instance.ebsOptimized()).
                                     enaSupport(instance.enaSupport()).
                                     hypervisor(instance.hypervisorAsString()).
-                                    iamInstanceProfile(instance.iamInstanceProfile()).
+//                                  iamInstanceProfile(IamInstanceProfile.builder().arn(instance.iamInstanceProfile().getValueForField("Arn",String.class).toString()).id(instance.iamInstanceProfile().getValueForField("id",String.class).toString()).build()).
                                     instanceLifecycle(instance.instanceLifecycleAsString()).
+//                                  elasticGpuAssociation(instance.elasticGpuAssociations()).
+//                                  elasticInferenceAcceleratorAssociations(instance.elasticInferenceAcceleratorAssociations()).
+//                                  networkInterfaces(instance.networkInterfaces()).
                                     outpostArn(instance.outpostArn()).
                                     rootDeviceName(instance.rootDeviceName()).
                                     rootDeviceType(instance.rootDeviceTypeAsString()).
+//                                  securityGroups(instance.securityGroups()).
                                     sourceDestCheck(instance.sourceDestCheck()).
                                     spotInstanceRequestId(instance.spotInstanceRequestId()).
                                     sriovNetSupport(instance.sriovNetSupport()).
+//                                  tags(instance.tags()).
                                     virtualizationType(instance.virtualizationTypeAsString()).
-                                    cpuOptions(instance.cpuOptions()).
-                                    capacityReservationSpecification(instance.capacityReservationSpecification()).
-                                    hibernationOptions(instance.hibernationOptions()).
-                                    metadataOptions(instance.metadataOptions()).
-//                                    enclaveOptions(instance.enclaveOptions()).
+                                    cpuOptions(CpuOptions.builder().coreCount(instance.cpuOptions().coreCount()).threadsPerCore(instance.cpuOptions().threadsPerCore()).build()).
+//                                  capacityReservationSpecification(CapacityReservationSpecificationResponse.builder()
+//                                        .capacityReservationPreference(instance.capacityReservationSpecification().capacityReservationPreferenceAsString())
+//                                        .capacityReservationTarget(CapacityReservationTargetResponse.builder()
+//                                                .capacityReservationId(instance.capacityReservationSpecification().capacityReservationTarget().capacityReservationId())
+//                                                .capacityReservationResourceGroupArn(instance.capacityReservationSpecification().capacityReservationTarget().capacityReservationResourceGroupArn()).build())
+//                                        .build()).
+                                    hibernationOptions(HibernationOptions.builder().configured(instance.hibernationOptions().configured()).build()).
+//                                  licenses(instance.licenses()).
+                                    metadataOptions(InstanceMetadataOptionsResponse.builder()
+                                            .state(instance.metadataOptions().stateAsString())
+                                            .httpTokens(instance.metadataOptions().httpTokensAsString())
+                                            .httpPutResponseHopLimit(instance.metadataOptions().httpPutResponseHopLimit())
+                                            .httpEndpoint(instance.metadataOptions().httpEndpointAsString())
+                                            .httpProtocolIpv6(instance.metadataOptions().httpProtocolIpv6AsString())
+                                            .instanceMetadataTags(instance.metadataOptions().instanceMetadataTagsAsString()).build()).
+                                    enclaveOptions(EnclaveOptions.builder().enabled(instance.enclaveOptions().enabled()).build()).
                                     bootMode(instance.bootModeAsString()).build());
 
 

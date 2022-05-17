@@ -1,6 +1,12 @@
 package com.tmax.cmp.svc.aws;
 
-import com.tmax.cmp.entity.aws.ec2.Ec2Instance;
+import com.tmax.cmp.entity.aws.ec2.CpuOptions;
+import com.tmax.cmp.entity.aws.ec2.EnclaveOptions;
+import com.tmax.cmp.entity.aws.ec2.HibernationOptions;
+import com.tmax.cmp.entity.aws.ec2.InstanceMetadataOptionsResponse;
+import com.tmax.cmp.entity.aws.ec2.InstanceState;
+import com.tmax.cmp.entity.aws.ec2.Placement;
+import com.tmax.cmp.entity.aws.ec2.*;
 import com.tmax.cmp.repository.AWSInstanceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,7 +22,7 @@ public class AWSInstanceService {
     @Autowired
     private AWSInstanceRepository awsInstanceRepository;
 
-    public void saveInstances(String region) {
+    public void saveInstances(String region) throws Exception{
         Region defRegion;
 
         if (region == null) {
@@ -57,14 +63,14 @@ public class AWSInstanceService {
         System.out.println("total image e/a : " + response.images().size());
     }
 
-    public ArrayList<Ec2Instance> getAllInstanceFromAWS(String region){
+    public ArrayList<Ec2Instance> getAllInstanceFromAWS(String region) throws Exception{
 
         Ec2Client ec2Client = Ec2Client.builder().region(Region.of(region)).build();
 
         boolean done = false;
         String nextToken = null;
         ArrayList<Ec2Instance> awsInstanceDTOS = new ArrayList<Ec2Instance>();
-        try{
+//        try{
             do{
                 DescribeInstancesRequest request = DescribeInstancesRequest
                         .builder().maxResults(10).nextToken(nextToken).build();
@@ -82,15 +88,22 @@ public class AWSInstanceService {
                                 kernelId(instance.kernelId()).
                                 keyName(instance.keyName()).
                                 launchTime(instance.launchTime()).
-                                placement(instance.placement()).
+                                placement(Placement.builder().availabilityZone(instance.placement().availabilityZone())
+                                        .affinity(instance.placement().affinity())
+                                        .groupName(instance.placement().groupName())
+                                        .partitionNumber(instance.placement().partitionNumber())
+                                        .hostId(instance.placement().hostId())
+                                        .tenancy(instance.placement().tenancyAsString())
+                                        .spreadDomain(instance.placement().spreadDomain())
+                                        .hostResourceGroupArn(instance.placement().hostResourceGroupArn()).build()).
                                 platform(instance.platformAsString()).
                                 privateDnsName(instance.privateDnsName()).
                                 privateIpAddress(instance.privateIpAddress()).
-//                                productCodes(instance.productCodes()).
+//                                productCodes(ProductCode.builder().productCodeId(instance.productCodes().)).
                                 publicDnsName(instance.publicDnsName()).
                                 ramdiskId(instance.ramdiskId()).
-                                stateReason(instance.stateReason()).
-                                state(instance.state().nameAsString()).
+//                                stateReason(StateReason.builder().code(instance.stateReason().code()).message(instance.stateReason().message()).build()).
+                                state(InstanceState.builder().code(instance.state().code()).name(instance.state().nameAsString()).build()).
                                 stateTransitionReason(instance.stateTransitionReason()).
                                 subnetId(instance.subnetId()).
                                 vpcId(instance.vpcId()).
@@ -100,7 +113,7 @@ public class AWSInstanceService {
                                 ebsOptimized(instance.ebsOptimized()).
                                 enaSupport(instance.enaSupport()).
                                 hypervisor(instance.hypervisorAsString()).
-                                iamInstanceProfile(instance.iamInstanceProfile()).
+//                                iamInstanceProfile(IamInstanceProfile.builder().arn(instance.iamInstanceProfile().getValueForField("Arn",String.class).toString()).id(instance.iamInstanceProfile().getValueForField("id",String.class).toString()).build()).
                                 instanceLifecycle(instance.instanceLifecycleAsString()).
 //                                elasticGpuAssociation(instance.elasticGpuAssociations()).
 //                                elasticInferenceAcceleratorAssociations(instance.elasticInferenceAcceleratorAssociations()).
@@ -114,17 +127,28 @@ public class AWSInstanceService {
                                 sriovNetSupport(instance.sriovNetSupport()).
 //                                tags(instance.tags()).
                                 virtualizationType(instance.virtualizationTypeAsString()).
-                                cpuOptions(instance.cpuOptions()).
-                                capacityReservationSpecification(instance.capacityReservationSpecification()).
-                                hibernationOptions(instance.hibernationOptions()).
+                                cpuOptions(CpuOptions.builder().coreCount(instance.cpuOptions().coreCount()).threadsPerCore(instance.cpuOptions().threadsPerCore()).build()).
+//                                capacityReservationSpecification(CapacityReservationSpecificationResponse.builder()
+//                                        .capacityReservationPreference(instance.capacityReservationSpecification().capacityReservationPreferenceAsString())
+//                                        .capacityReservationTarget(CapacityReservationTargetResponse.builder()
+//                                                .capacityReservationId(instance.capacityReservationSpecification().capacityReservationTarget().capacityReservationId())
+//                                                .capacityReservationResourceGroupArn(instance.capacityReservationSpecification().capacityReservationTarget().capacityReservationResourceGroupArn()).build())
+//                                        .build()).
+                                hibernationOptions(HibernationOptions.builder().configured(instance.hibernationOptions().configured()).build()).
 //                                licenses(instance.licenses()).
-                                metadataOptions(instance.metadataOptions()).
-//                                enclaveOptions(instance.enclaveOptions()).
+                                metadataOptions(InstanceMetadataOptionsResponse.builder()
+                                        .state(instance.metadataOptions().stateAsString())
+                                        .httpTokens(instance.metadataOptions().httpTokensAsString())
+                                        .httpPutResponseHopLimit(instance.metadataOptions().httpPutResponseHopLimit())
+                                        .httpEndpoint(instance.metadataOptions().httpEndpointAsString())
+                                        .httpProtocolIpv6(instance.metadataOptions().httpProtocolIpv6AsString())
+                                        .instanceMetadataTags(instance.metadataOptions().instanceMetadataTagsAsString()).build()).
+                                enclaveOptions(EnclaveOptions.builder().enabled(instance.enclaveOptions().enabled()).build()).
                                 bootMode(instance.bootModeAsString()).
                                 region(region).build());
 
 
-                        System.out.println("Instance Id is " + instance.instanceId());
+                        System.out.println("Instance Id is " + instance.toBuilder().toString());
                         System.out.println("state as string: " + instance.state().nameAsString());
                         System.out.println("state: " + instance.state());
                         System.out.println("state name: " + instance.state().name());
@@ -139,10 +163,10 @@ public class AWSInstanceService {
                     }
                 }
             } while(nextToken != null);
-        }catch (Ec2Exception e){
-            System.err.println(e.awsErrorDetails().errorMessage());
-            System.exit(1);
-        }
+//        }catch (Ec2Exception e){
+//            System.err.println(e.awsErrorDetails().errorMessage());
+//            System.exit(1);
+//        }
 
         awsInstanceRepository.saveAll(awsInstanceDTOS);
 
