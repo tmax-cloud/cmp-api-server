@@ -1,6 +1,7 @@
 package com.tmax.cmp.component;
 
 import com.tmax.cmp.configuration.ClientConfig;
+import com.tmax.cmp.entity.common.client.awsClient;
 import com.tmax.cmp.svc.aws.AWSInstanceService;
 import com.tmax.cmp.svc.vsphere.VsphereVMService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,7 +10,11 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import software.amazon.awssdk.core.exception.SdkClientException;
 import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.ec2.Ec2Client;
 import software.amazon.awssdk.services.ec2.model.Ec2Exception;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Component
 public class Scheduler {
@@ -24,7 +29,18 @@ public class Scheduler {
     public void awsSyncScheduler() throws InterruptedException {
         System.out.println("Current Thread: " + Thread.currentThread().getName());
 
+//      sample iteration
+/*
         AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(ClientConfig.class);
+        List<awsClient> clients = (ArrayList<awsClient>)context.getBean("awsClients");
+
+        for(awsClient client : clients) {
+            for(Ec2Client ec2Client : client.getEc2Clients()){
+
+            }
+        }
+*/
+
         //client 미리 region 만들어져있음... 가져다 쓰기만 하자. vsphere 랑은 메서드 분리
         //clients 를 for문
         //region별로  for문
