@@ -76,7 +76,7 @@ public class AWSInstanceCRUDController {
                 do{
                     DescribeInstancesRequest request = DescribeInstancesRequest
                             .builder().maxResults(10).nextToken(nextToken).build();
-                    DescribeInstancesResponse response = client.getEc2Client().describeInstances(request);
+                    DescribeInstancesResponse response = client.getEc2Clients().get(0).describeInstances(request);
 
                     for(Reservation reservation : response.reservations()){
 
@@ -148,7 +148,6 @@ public class AWSInstanceCRUDController {
                                     bootMode(instance.bootModeAsString()).build());
 
 
-                            System.out.println("Region is " + client.getRegion() );
                             System.out.println("Instance Id is " + instance.instanceId());
                             System.out.println("state as string: " + instance.state().nameAsString());
                             System.out.println("state: " + instance.state());
