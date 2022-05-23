@@ -1,5 +1,6 @@
 package com.tmax.cmp.svc.aws;
 
+import com.tmax.cmp.configuration.ClientConfig;
 import com.tmax.cmp.entity.aws.ec2.CpuOptions;
 import com.tmax.cmp.entity.aws.ec2.EnclaveOptions;
 import com.tmax.cmp.entity.aws.ec2.HibernationOptions;
@@ -7,8 +8,10 @@ import com.tmax.cmp.entity.aws.ec2.InstanceMetadataOptionsResponse;
 import com.tmax.cmp.entity.aws.ec2.InstanceState;
 import com.tmax.cmp.entity.aws.ec2.Placement;
 import com.tmax.cmp.entity.aws.ec2.*;
+import com.tmax.cmp.entity.common.client.awsClient;
 import com.tmax.cmp.repository.AWSInstanceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.stereotype.Service;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.ec2.Ec2Client;
@@ -22,6 +25,7 @@ public class AWSInstanceService {
     @Autowired
     private AWSInstanceRepository awsInstanceRepository;
 
+    //Deprecated
     public void saveInstances(String region) throws Exception{
         Region defRegion;
 
@@ -31,9 +35,16 @@ public class AWSInstanceService {
            defRegion = Region.of(region);
         }
 
-        Ec2Client ec2Client = Ec2Client.builder().region(defRegion).build();
-        ArrayList<Ec2Instance> instances = getAllInstanceFromAWS(defRegion.id());
-        awsInstanceRepository.saveAll(instances);
+        AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(ClientConfig.class);
+        List<awsClient> clients = (ArrayList<awsClient>)context.getBean("awsClients");
+
+        for(awsClient client : clients) {
+            for (Ec2Client ec2Client : client.getEc2Clients()) {
+
+            }
+        }
+//        ArrayList<Ec2Instance> instances = getAllInstanceFromAWS(defRegion.id());
+//        awsInstanceRepository.saveAll(instances);
 
     }
 
@@ -63,9 +74,8 @@ public class AWSInstanceService {
         System.out.println("total image e/a : " + response.images().size());
     }
 
-    public ArrayList<Ec2Instance> getAllInstanceFromAWS(String region) throws Exception{
+    public ArrayList<Ec2Instance> getAllInstanceFromAWS(Ec2Client ec2Client) throws Exception{
 
-        Ec2Client ec2Client = Ec2Client.builder().region(Region.of(region)).build();
 
         boolean done = false;
         String nextToken = null;
@@ -149,13 +159,12 @@ public class AWSInstanceService {
                                     .httpProtocolIpv6(instance.metadataOptions().httpProtocolIpv6AsString())
                                     .instanceMetadataTags(instance.metadataOptions().instanceMetadataTagsAsString()).build()).
                             enclaveOptions(EnclaveOptions.builder().enabled(instance.enclaveOptions().enabled()).build()).
-                            bootMode(instance.bootModeAsString()).
-                            region(region).build());
+                            bootMode(instance.bootModeAsString()).build());
 
                         System.out.println(instanceId + " mapping done");
                     }catch (NullPointerException e){
                         System.out.println("error occured while mapping dto");
-                        System.out.println("region: " + region + " | instanceId: " + instanceId);
+                        System.out.println("instanceId: " + instanceId);
                         e.getMessage();
                     }
 
