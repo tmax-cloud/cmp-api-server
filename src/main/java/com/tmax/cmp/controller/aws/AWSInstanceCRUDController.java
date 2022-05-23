@@ -33,10 +33,13 @@ public class AWSInstanceCRUDController {
     @GetMapping("/sync")
     public void syncInstance(@RequestParam(name = "region", required = false) String region) throws Exception {
 
-        ArrayList<Ec2Instance> instanceList = awsInstanceService.getAllInstanceFromAWS(region);
+        AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(ClientConfig.class);
+        List<awsClient> clients = (ArrayList<awsClient>)context.getBean("awsClients");
 
-        for(Ec2Instance ec2Instance : instanceList){
-            System.out.println("save instance: " + ec2Instance.getInstanceId());
+        for(awsClient client : clients) {
+            for (Ec2Client ec2Client : client.getEc2Clients()) {
+                ArrayList<Ec2Instance> instanceList = awsInstanceService.getAllInstanceFromAWS(ec2Client);
+            }
         }
 
     }

@@ -1,24 +1,35 @@
 package com.tmax.cmp.configuration;
 
-import com.tmax.cmp.entity.aws.ec2.Ec2Instance;
-import com.tmax.cmp.entity.common.client.Client;
 import com.tmax.cmp.entity.common.client.awsClient;
 import com.tmax.cmp.entity.common.client.vSphereClient;
+import com.tmax.cmp.repository.CredentialRepository;
+import com.tmax.cmp.svc.common.CredentialService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Configuration
+@EnableJpaRepositories(basePackages = "com.tmax.cmp.repository", entityManagerFactoryRef="emf")
 public class ClientConfig {
+//
+
+    CredentialService credentialService;
+
+    CredentialRepository credentialRepository;
 
     @Bean
     public List<awsClient> awsClients(){
-        List<awsClient> clientList = new ArrayList<awsClient>();
-        awsClient client;
 
-//        for( ){                                       // Hibernate 기반 credential querying
+        List<awsClient> clientList = new ArrayList<awsClient>();
+//        List<AwsCredentials> awsCredentialsList = credentialService.getAwsCredentials();
+
+//        for(AwsCredentials awsCredentials : awsCredentialsList){
+//            awsClient client;
+//            client = new awsClient(awsCredentials.getAccessKey(),awsCredentials.getSecretKey());
+//            clientList.add(client);
 //        }
 
         return clientList;
