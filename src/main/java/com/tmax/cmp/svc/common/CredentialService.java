@@ -1,7 +1,9 @@
 package com.tmax.cmp.svc.common;
 
 import com.tmax.cmp.entity.common.account.AwsCredentials;
-import com.tmax.cmp.repository.CredentialRepository;
+import com.tmax.cmp.entity.common.account.VsphereCredentials;
+import com.tmax.cmp.repository.AwsCredentialRepository;
+import com.tmax.cmp.repository.VsphereCredentialRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -11,7 +13,10 @@ import java.util.List;
 public class CredentialService {
 
     @Autowired
-    CredentialRepository credentialRepository;
+    AwsCredentialRepository awsCredentialRepository;
+
+    @Autowired
+    VsphereCredentialRepository vsphereCredentialRepository;
 
     public void saveAwsCredential(String accessKey, String secretKey){
 
@@ -20,11 +25,15 @@ public class CredentialService {
                 .secretKey(secretKey)
                 .build();
 
-        credentialRepository.save(awsCredentials);
+        awsCredentialRepository.save(awsCredentials);
     }
 
     public List<AwsCredentials> getAwsCredentials(){
-        return credentialRepository.findAll();
+        return awsCredentialRepository.findAll();
+    }
+
+    public List<VsphereCredentials> getVsphereCredentials(){
+        return vsphereCredentialRepository.findAll();
     }
 
 }
