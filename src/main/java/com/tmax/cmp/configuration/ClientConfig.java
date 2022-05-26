@@ -11,21 +11,12 @@ import java.util.List;
 @Configuration
 public class ClientConfig {
 
-    private static List<awsClient> clientList = new ArrayList<>();
+    private static List<awsClient> awsClientList = new ArrayList<>();
+    private static List<vSphereClient> vsphereClientList = new ArrayList<>();
 
     @Bean
-    public List<awsClient> awsClients(){ return clientList; }
+    public List<awsClient> awsClients(){ return awsClientList; }
 
     @Bean
-    public List<vSphereClient> vSphereClients() {
-        List<vSphereClient> clientList = new ArrayList<vSphereClient>();
-        vSphereClient client;
-
-
-        client = new vSphereClient("192.168.9.231","administrator@vsphere.local","Tmax@2323");
-        clientList.add(client);
-
-
-        return clientList;
-    }
+    public List<vSphereClient> vSphereClients() { return vsphereClientList; }
 }

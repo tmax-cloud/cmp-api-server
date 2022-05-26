@@ -2,8 +2,6 @@ package com.tmax.cmp.svc.vsphere;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.tmax.cmp.configuration.ClientConfig;
-import com.tmax.cmp.entity.common.client.vSphereClient;
 import com.tmax.cmp.entity.vsphere.vm.vmresources.*;
 import com.tmax.cmp.repository.VsphereVMRepository;
 import com.vmware.vapi.bindings.StubConfiguration;
@@ -11,7 +9,6 @@ import com.vmware.vapi.bindings.StubFactory;
 import com.vmware.vcenter.VM;
 import com.vmware.vcenter.VMTypes;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -168,6 +165,7 @@ public class VsphereVMService {
         List<VMTypes.Summary> vmList = vmService.list(new VMTypes.FilterSpec());
         ArrayList<String> vmNames = new ArrayList<>();
 
+        System.out.println("total vm Count: " + vmList.size());
         for(VMTypes.Summary summary : vmList){
             System.out.println(summary);
             vmNames.add(summary.getVm());
@@ -185,66 +183,64 @@ public class VsphereVMService {
         return vmInfo;
     }
 
-    public void syncVMFromServerToDB() throws Exception{
+    public void syncVMFromServerToDB(VM vmClient) throws Exception{
 
-        AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(ClientConfig.class);
-        List<vSphereClient> clients = (ArrayList<vSphereClient>)context.getBean("vSphereClients");
+        List<String> vmNames = getVMListFromServer(vmClient);
+        int mappingSuccess = 0;
+        int mappingFail = 0;
 
-        for(vSphereClient vSphereClient : clients){
-            VM vmService = vSphereClient.getVmClient();
+        for(String vmName : vmNames){
+            try{
+                VMTypes.Info vmInfo = getVMInfoFromServer(vmClient, vmName);
+                VsphereVM vm = VsphereVM.builder()
+                        .boot(
+                                Boot.builder().delay(vmInfo.getBoot().getDelay()).efi_legacy_boot(vmInfo
+                                        .getBoot().getEfiLegacyBoot()).enter_setup_mode(vmInfo.getBoot().getEnterSetupMode())
+                                        .network_protocol(vmInfo.getBoot().getNetworkProtocol()).retry(vmInfo.getBoot().getRetry())
+                                        .retry_delay(vmInfo.getBoot().getRetryDelay()).type(vmInfo.getBoot().getType()).build())
+                        .identity(
+                                Identity.builder().bios_uuid(vmInfo.getIdentity().getBiosUuid())
+                                        .instance_uuid(vmInfo.getIdentity().getInstanceUuid())
+                                        .name(vmInfo.getName()).build()
+                        )
+                        .guest_OS(vmInfo.getGuestOS().toString())
+                        .hardware(
+                                Hardware.builder().version(vmInfo.getHardware().getVersion().name())
+                                        .upgrade_policy(vmInfo.getHardware().getUpgradePolicy().name())
+                                        .upgrade_version(vmInfo.getHardware().getUpgradeVersion())      //upgrade version은 String으로 받을 시 insert 까지 적용 안됨 (단순 null error?)
+                                        .upgrade_status(vmInfo.getHardware().getUpgradeStatus().name())
+                                        .upgrade_error(vmInfo.getHardware().getUpgradeError()).build())
+                        .instant_clone_frozen(vmInfo.getInstantCloneFrozen())
+                        .memory(
+                                Memory.builder().size_MiB(vmInfo.getMemory().getSizeMiB())
+                                        .hot_add_enabled(vmInfo.getMemory().getHotAddEnabled())
+                                        .hot_add_increment_size_MiB(vmInfo.getMemory().getHotAddIncrementSizeMiB())
+                                        .hot_add_limit_MiB(vmInfo.getMemory().getHotAddLimitMiB()).build())
+                        .name(vmInfo.getName())
+                        .power_state(vmInfo.getPowerState().getEnumValue().toString())
+                        .cpu(
+                                Cpu.builder()
+                                        .count(vmInfo.getCpu().getCount())
+                                        .cores_per_socket(vmInfo.getCpu().getCoresPerSocket())
+                                        .hot_add_enabled(vmInfo.getCpu().getHotAddEnabled())
+                                        .hot_remove_enabled(vmInfo.getCpu().getHotAddEnabled()).build()
+                        )
 
-            List<String> vmNames = getVMListFromServer(vmService);
+                        .build();
 
-            for(String vmName : vmNames){
-
-                try{
-                    VMTypes.Info vmInfo = getVMInfoFromServer(vmService, vmName);
-                    VsphereVM vm = VsphereVM.builder()
-                            .boot(
-                                    Boot.builder().delay(vmInfo.getBoot().getDelay()).efi_legacy_boot(vmInfo
-                                            .getBoot().getEfiLegacyBoot()).enter_setup_mode(vmInfo.getBoot().getEnterSetupMode())
-                                            .network_protocol(vmInfo.getBoot().getNetworkProtocol()).retry(vmInfo.getBoot().getRetry())
-                                            .retry_delay(vmInfo.getBoot().getRetryDelay()).type(vmInfo.getBoot().getType()).build())
-                            .identity(
-                                    Identity.builder().bios_uuid(vmInfo.getIdentity().getBiosUuid())
-                                            .instance_uuid(vmInfo.getIdentity().getInstanceUuid())
-                                            .name(vmInfo.getName()).build()
-                            )
-                            .guest_OS(vmInfo.getGuestOS().toString())
-                            .hardware(
-                                    Hardware.builder().version(vmInfo.getHardware().getVersion().name())
-                                            .upgrade_policy(vmInfo.getHardware().getUpgradePolicy().name())
-                                            .upgrade_version(vmInfo.getHardware().getUpgradeVersion())      //upgrade version은 String으로 받을 시 insert 까지 적용 안됨 (단순 null error?)
-                                            .upgrade_status(vmInfo.getHardware().getUpgradeStatus().name())
-                                            .upgrade_error(vmInfo.getHardware().getUpgradeError()).build())
-                            .instant_clone_frozen(vmInfo.getInstantCloneFrozen())
-                            .memory(
-                                    Memory.builder().size_MiB(vmInfo.getMemory().getSizeMiB())
-                                            .hot_add_enabled(vmInfo.getMemory().getHotAddEnabled())
-                                            .hot_add_increment_size_MiB(vmInfo.getMemory().getHotAddIncrementSizeMiB())
-                                            .hot_add_limit_MiB(vmInfo.getMemory().getHotAddLimitMiB()).build())
-                            .name(vmInfo.getName())
-                            .power_state(vmInfo.getPowerState().getEnumValue().toString())
-                            .cpu(
-                                    Cpu.builder()
-                                            .count(vmInfo.getCpu().getCount())
-                                            .cores_per_socket(vmInfo.getCpu().getCoresPerSocket())
-                                            .hot_add_enabled(vmInfo.getCpu().getHotAddEnabled())
-                                            .hot_remove_enabled(vmInfo.getCpu().getHotAddEnabled()).build()
-                            )
-
-                            .build();
-                    vsphereVMRepository.save(vm);
-                }catch (Exception e){
-                    e.getMessage();
-                }
-
+                mappingSuccess++;
+                vsphereVMRepository.save(vm);
+            }catch (Exception e){
+                mappingFail++;
+                System.out.println("error occured while mapping vm to dto");
+                System.out.println("mapping fail vm: " + vmName);
+                e.getMessage();
             }
+
         }
 
-
-
-
+        System.out.println("total mapping success: " + mappingSuccess);
+        System.out.println("total mapping fail: " + mappingFail);
     }
 
 }
