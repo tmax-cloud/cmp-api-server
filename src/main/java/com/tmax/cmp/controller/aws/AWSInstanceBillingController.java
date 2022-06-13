@@ -14,9 +14,22 @@ public class AWSInstanceBillingController {
     AWSInstanceBillingService awsInstanceBillingService;
 
     @GetMapping("/annual")
-    public void getAnnualCost(String startDate, String endDate){
+    public void getMetricAndBillings(String startDate, String endDate, String metrics, String granularity,
+                                     String group, String dimensionKey, String dimensionValue){
 
-        awsInstanceBillingService.getCostOfInstance(startDate, endDate);
+        awsInstanceBillingService.getCostOfInstance(startDate, endDate, metrics, granularity, group, dimensionKey, dimensionValue);
+    }
+
+    @GetMapping("/dimensionValue")
+    public void getDimensionValue(String startDate, String endDate, String dimensionContext, String dimensionKey){
+
+        awsInstanceBillingService.getDimensionValues(dimensionContext, dimensionKey, startDate, endDate);
+    }
+
+    @GetMapping("/costAndUsageReport")
+    public void getCostAndUsageReport(){
+
+        awsInstanceBillingService.getCostAndUsageReport();
     }
 
 }
