@@ -4,6 +4,7 @@ import lombok.Getter;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.costandusagereport.CostAndUsageReportClient;
 import software.amazon.awssdk.services.costexplorer.CostExplorerClient;
 import software.amazon.awssdk.services.ec2.Ec2Client;
 
@@ -19,15 +20,20 @@ public class awsClient implements Client{
             Region.EU_WEST_1, Region.AP_NORTHEAST_3, Region.AP_NORTHEAST_2, Region.AP_NORTHEAST_1, Region.SA_EAST_1, Region.AP_EAST_1, Region.CN_NORTH_1,
             Region.AP_SOUTHEAST_1, Region.AP_SOUTHEAST_2, Region.US_EAST_1, Region.US_EAST_2));
     private Ec2Client ec2Client;
-    private CostExplorerClient costClient;
+    private CostExplorerClient costExplorerClient;
+    private CostAndUsageReportClient costAndUsageReportClient;
+
     @Getter
-    private List<CostExplorerClient> costClients;
+    private List<CostExplorerClient> costExplorerClients;
     @Getter
     private List<Ec2Client> ec2Clients;
+    @Getter
+    private List<CostAndUsageReportClient> costAndUsageReportClients;
 
     public awsClient(String accessKey, String secretKey) {
         AwsBasicCredentials awsCredential = AwsBasicCredentials.create(accessKey, secretKey);
-        this.costClients = new ArrayList<CostExplorerClient>();
+        this.costExplorerClients = new ArrayList<CostExplorerClient>();
+        this.costAndUsageReportClients = new ArrayList<CostAndUsageReportClient>();
         this.ec2Clients = new ArrayList<Ec2Client>();
 
         for(Region region : REGIONS) {
@@ -35,11 +41,17 @@ public class awsClient implements Client{
                     .credentialsProvider(StaticCredentialsProvider.create(awsCredential))
                     .region(region)
                     .build();
-            costClient = CostExplorerClient.builder()
-                    .region(region)
-                    .build();
             ec2Clients.add(ec2Client);
-            costClients.add(costClient);
         }
+
+        costExplorerClient = CostExplorerClient.builder().credentialsProvider(StaticCredentialsProvider.create(awsCredential))
+                .region(Region.US_EAST_1)
+                .build();
+
+        costAndUsageReportClient = CostAndUsageReportClient.builder().credentialsProvider(StaticCredentialsProvider.create(awsCredential))
+                        .region(Region.US_EAST_1).build();
+
+        costExplorerClients.add(costExplorerClient);
+        costAndUsageReportClients.add(costAndUsageReportClient);
     }
 }
