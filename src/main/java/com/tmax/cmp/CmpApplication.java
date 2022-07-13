@@ -21,38 +21,38 @@ import java.util.List;
 public class CmpApplication {
 
 	@Autowired
-	private CredentialService credentialService;
-
-	AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(ClientConfig.class);
+//	private CredentialService credentialService;
+//
+//	AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(ClientConfig.class);
 
 	public static void main(String[] args) {
 		SpringApplication.run(CmpApplication.class, args);
 	}
 
-	@PostConstruct
-	public void init(){
-		setAwsClients();
-		setVsphereClients();
-	}
-
-	public void setAwsClients(){
-		List<awsClient> clientList = (ArrayList<awsClient>)context.getBean("awsClients");
-		awsClient client;
-
-		for(AwsCredentials awsCredential : credentialService.getAwsCredentials()){
-			client = new awsClient(awsCredential.getAccessKey(),awsCredential.getSecretKey());
-			clientList.add(client);
-		}
-	}
-
-	public void setVsphereClients(){
-		List<vSphereClient> clientList = (ArrayList<vSphereClient>)context.getBean("vSphereClients");
-		vSphereClient client;
-
-		for(VsphereCredentials vsphereCredentials : credentialService.getVsphereCredentials()){
-			client = new vSphereClient(vsphereCredentials.getServer(), vsphereCredentials.getUsername(), vsphereCredentials.getPassword());
-			clientList.add(client);
-		}
-	}
+//	@PostConstruct
+//	public void init(){
+//		setAwsClients();
+//		setVsphereClients();
+//	}
+//
+//	public void setAwsClients(){
+//		List<awsClient> clientList = (ArrayList<awsClient>)context.getBean("awsClients");
+//		awsClient client;
+//
+//		for(AwsCredentials awsCredential : credentialService.getAwsCredentials()){
+//			client = new awsClient(awsCredential.getAccessKey(),awsCredential.getSecretKey());
+//			clientList.add(client);
+//		}
+//	}
+//
+//	public void setVsphereClients(){
+//		List<vSphereClient> clientList = (ArrayList<vSphereClient>)context.getBean("vSphereClients");
+//		vSphereClient client;
+//
+//		for(VsphereCredentials vsphereCredentials : credentialService.getVsphereCredentials()){
+//			client = new vSphereClient(vsphereCredentials.getServer(), vsphereCredentials.getUsername(), vsphereCredentials.getPassword());
+//			clientList.add(client);
+//		}
+//	}
 
 }
