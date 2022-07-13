@@ -17,7 +17,9 @@ public class TerraformProvisioningService {
         System.out.println("path : " + terraformBinaryPath);
 
         //command[0]은 window의 경우 "cmd.exe", linux의 경우 "bash"
+
         String[] command = new String[] { "cmd.exe", "/c", terraformBinaryPath + "/terraform.exe apply -auto-approve"};
+
         //String[] command = new String[] { "/bin/bash", "-c", terraformBinaryPath + "/terraform apply -auto-approve"};
 
 //        String[] command = new String[] {

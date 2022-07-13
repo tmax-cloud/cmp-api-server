@@ -28,7 +28,6 @@ public class CmpApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(CmpApplication.class, args);
 	}
-
 //	@PostConstruct
 //	public void init(){
 //		setAwsClients();
