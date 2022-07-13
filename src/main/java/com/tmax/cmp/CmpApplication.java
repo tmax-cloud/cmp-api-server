@@ -21,14 +21,13 @@ import java.util.List;
 public class CmpApplication {
 
 	@Autowired
-	private CredentialService credentialService;
-
-	AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(ClientConfig.class);
+//	private CredentialService credentialService;
+//
+//	AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(ClientConfig.class);
 
 	public static void main(String[] args) {
 		SpringApplication.run(CmpApplication.class, args);
 	}
-//
 //	@PostConstruct
 //	public void init(){
 //		setAwsClients();
